@@ -598,6 +598,15 @@ body {
 }
 body.spotlight-on .brick-layer { opacity: 1; }
 
+/* Shadow canvas: multiply blend makes #000 darken the lit wall instead of
+   painting on top of darkness. CSS mask matches the spotlight so edges dissolve
+   at the same rate — no hard JS arc clip needed. */
+.shadow-canvas {
+  mix-blend-mode: multiply;
+  -webkit-mask-image: radial-gradient(circle 220px at var(--spot-x) var(--spot-y), black 0%, black 30%, transparent 85%);
+  mask-image: radial-gradient(circle 220px at var(--spot-x) var(--spot-y), black 0%, black 30%, transparent 85%);
+}
+
 body.spotlight-on::after {
   content: "";
   position: fixed; inset: 0;

@@ -47,10 +47,6 @@ function Footer() {
 
 // Elements whose text will cast shadows on the brick wall
 const SHADOW_SELECTORS = '.hero-heading, .section-title, .contact-title';
-// How far the shadow extends past the element (higher = longer shadow)
-const SHADOW_DEPTH = 0.45;
-// Spotlight reveal radius (must match CSS mask in index.css)
-const SPOT_R = 220;
 
 function drawWrapped(ctx, text, x, y, maxWidth, lineHeight) {
   const words = text.replace(/\s+/g, ' ').trim().split(' ');
@@ -95,7 +91,6 @@ export default function App() {
     let raf;
     let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
     let cx = tx, cy = ty;
-    const shadowColor = 'oklch(0.08 0.05 250 / 0.7)';
 
     const onMove = (e) => { tx = e.clientX; ty = e.clientY; };
 
@@ -108,45 +103,34 @@ export default function App() {
 
       if (sCtx && canvas) {
         sCtx.clearRect(0, 0, canvas.width, canvas.height);
-        sCtx.save();
 
-        // Clip shadows to the spotlight circle so they only appear on the lit wall
-        sCtx.beginPath();
-        sCtx.arc(cx, cy, SPOT_R + 60, 0, Math.PI * 2);
-        sCtx.clip();
+        // 3D perspective projection — light at Z=100, text floating at Z=30, wall at Z=0.
+        // Anchoring the scale at the cursor naturally pushes shadows away from the light.
+        // CSS mask (not JS clip) handles the edge fade to match the spotlight shape.
+        const SCALE = 100 / (100 - 30); // ~1.43
 
         document.querySelectorAll(SHADOW_SELECTORS).forEach(el => {
           const rect = el.getBoundingClientRect();
           if (!rect.width || !rect.height) return;
 
           const st = getComputedStyle(el);
-          const elCX = rect.left + rect.width / 2;
-          const elCY = rect.top + rect.height / 2;
-
-          // Project shadow away from cursor through the element center
-          const dx = (elCX - cx) * SHADOW_DEPTH;
-          const dy = (elCY - cy) * SHADOW_DEPTH;
-
-          // Fade shadow out when element is far from spotlight center
-          const distToSpot = Math.hypot(elCX - cx, elCY - cy);
-          const alpha = Math.max(0, 1 - distToSpot / (SPOT_R * 1.4));
-          if (alpha < 0.02) return;
 
           sCtx.save();
-          sCtx.globalAlpha = alpha;
-          sCtx.filter = 'blur(3px)';
-          sCtx.fillStyle = shadowColor;
+          sCtx.translate(cx, cy);
+          sCtx.scale(SCALE, SCALE);
+          sCtx.translate(-cx, -cy);
+
+          sCtx.fillStyle = '#000';
+          sCtx.filter = 'blur(4px)';
           sCtx.textBaseline = 'top';
 
           const fs = parseFloat(st.fontSize);
           const lh = parseFloat(st.lineHeight) || fs * 1.35;
           sCtx.font = `${st.fontWeight} ${fs}px ${st.fontFamily}`;
 
-          drawWrapped(sCtx, el.textContent || '', rect.left + dx, rect.top + dy, rect.width, lh);
+          drawWrapped(sCtx, el.textContent || '', rect.left, rect.top, rect.width, lh);
           sCtx.restore();
         });
-
-        sCtx.restore();
       }
 
       raf = requestAnimationFrame(loop);
@@ -185,7 +169,7 @@ export default function App() {
         }} />
       )}
       <div className="brick-layer" />
-      <canvas ref={shadowCanvasRef} style={{
+      <canvas ref={shadowCanvasRef} className="shadow-canvas" style={{
         position: 'fixed', inset: 0,
         pointerEvents: 'none',
         zIndex: 2,

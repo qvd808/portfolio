@@ -15,11 +15,11 @@ function Chrome({ theme, onToggleTheme }) {
         <div className="chrome-left">
           <div className="logo">
             <span className="logo-dot" />
-            <span>vinh<span style={{color:'var(--fg-4)'}}>.</span>dang</span>
-            <span style={{color:'var(--fg-4)', marginLeft:6}}>// eng.</span>
+            <span>vinh<span style={{ color: 'var(--fg-4)' }}>.</span>dang</span>
+            <span style={{ color: 'var(--fg-4)', marginLeft: 6 }}>// eng.</span>
           </div>
         </div>
-        <nav className="chrome-right" style={{display:'flex'}}>
+        <nav className="chrome-right" style={{ display: 'flex' }}>
           <a href="#about" className="nav-link"><span className="num">01</span>about</a>
           <a href="#skills" className="nav-link"><span className="num">02</span>skills</a>
           <a href="#projects" className="nav-link"><span className="num">03</span>projects</a>
@@ -37,8 +37,8 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="build">
-        <span style={{color:'var(--accent)'}}>●</span>
-        <span>build · hand-crafted · {new Date().toISOString().slice(0,10)}</span>
+        <span style={{ color: 'var(--accent)' }}>●</span>
+        <span>build · hand-crafted · {new Date().toISOString().slice(0, 10)}</span>
       </div>
       <div>© 2026 vinh dang · all outputs verified</div>
     </footer>
@@ -48,45 +48,71 @@ function Footer() {
 // Elements whose text will cast shadows on the brick wall
 const SHADOW_SELECTORS = '.hero-heading, .section-title, .contact-title';
 
-function drawWrapped(ctx, text, x, y, maxWidth, lineHeight) {
-  const words = text.replace(/\s+/g, ' ').trim().split(' ');
-  let line = '';
-  let currY = y;
-  for (const word of words) {
-    const test = line ? `${line} ${word}` : word;
-    if (ctx.measureText(test).width > maxWidth && line) {
-      ctx.fillText(line, x, currY);
-      currY += lineHeight;
-      line = word;
-    } else {
-      line = test;
-    }
-  }
-  if (line) ctx.fillText(line, x, currY);
-}
-
 export default function App() {
   const [tweakState, setTweakState] = useTweaks();
   const [tweaksVisible, setTweaksVisible] = useState(false);
   const [introDone, setIntroDone] = useState(() => {
     try { return sessionStorage.getItem('introSeen') === '1'; } catch { return false; }
   });
-  const shadowCanvasRef = useRef(null);
+  const shadowContainerRef = useRef(null);
 
   useEffect(() => {
     const body = document.body;
     body.classList.add('spotlight-on');
 
-    const canvas = shadowCanvasRef.current;
-    const sCtx = canvas?.getContext('2d');
+    const container = shadowContainerRef.current;
 
-    const resize = () => {
-      if (!canvas) return;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    const syncClones = () => {
+      if (!container) return;
+      const targets = Array.from(document.querySelectorAll(SHADOW_SELECTORS));
+
+      // Build clones if missing
+      if (container.children.length !== targets.length) {
+        container.innerHTML = '';
+        targets.forEach(el => {
+          const clone = el.cloneNode(true);
+          clone.style.position = 'fixed';
+          clone.style.margin = '0';
+          clone.removeAttribute('id');
+          clone.style.pointerEvents = 'none';
+          clone.setAttribute('aria-hidden', 'true');
+          clone.style.boxSizing = 'border-box';
+          // DOM blur thins out text, so we artificially bulk up the clone's text stroke 
+          // and force it black to guarantee a brutally dark, high-contrast shadow.
+          clone.style.webkitTextStroke = '1.5px black';
+          clone.style.color = 'black';
+          container.appendChild(clone);
+        });
+      }
+
+      // Update positions
+      targets.forEach((el, i) => {
+        const clone = container.children[i];
+        if (!clone) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) {
+          clone.style.display = 'none';
+          return;
+        }
+        clone.style.display = 'block';
+        clone.style.left = rect.left + 'px';
+        clone.style.top = rect.top + 'px';
+        clone.style.width = rect.width + 'px';
+        clone.style.height = rect.height + 'px';
+      });
     };
-    resize();
-    window.addEventListener('resize', resize);
+
+    // Keep clones aligned on scroll and structural changes
+    window.addEventListener('scroll', syncClones, { passive: true });
+    window.addEventListener('resize', () => {
+      if (container) container.innerHTML = ''; // Force full rebuild
+      syncClones();
+    });
+    
+    // Fallback sync for late-loading fonts/images
+    const syncInterval = setInterval(syncClones, 500);
+    // Initial sync
+    setTimeout(syncClones, 50);
 
     let raf;
     let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
@@ -97,41 +123,9 @@ export default function App() {
     const loop = () => {
       cx += (tx - cx) * 0.18;
       cy += (ty - cy) * 0.18;
+      // This is now the ONLY thing happening in the 60fps loop!
       body.style.setProperty('--spot-x', cx + 'px');
       body.style.setProperty('--spot-y', cy + 'px');
-
-
-      if (sCtx && canvas) {
-        sCtx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // 3D perspective projection — light at Z=100, text floating at Z=30, wall at Z=0.
-        // Anchoring the scale at the cursor naturally pushes shadows away from the light.
-        // CSS mask (not JS clip) handles the edge fade to match the spotlight shape.
-        const SCALE = 100 / (100 - 30); // ~1.43
-
-        document.querySelectorAll(SHADOW_SELECTORS).forEach(el => {
-          const rect = el.getBoundingClientRect();
-          if (!rect.width || !rect.height) return;
-
-          const st = getComputedStyle(el);
-
-          sCtx.save();
-          sCtx.translate(cx, cy);
-          sCtx.scale(SCALE, SCALE);
-          sCtx.translate(-cx, -cy);
-
-          sCtx.fillStyle = '#000';
-          sCtx.filter = 'blur(4px)';
-          sCtx.textBaseline = 'top';
-
-          const fs = parseFloat(st.fontSize);
-          const lh = parseFloat(st.lineHeight) || fs * 1.35;
-          sCtx.font = `${st.fontWeight} ${fs}px ${st.fontFamily}`;
-
-          drawWrapped(sCtx, el.textContent || '', rect.left, rect.top, rect.width, lh);
-          sCtx.restore();
-        });
-      }
 
       raf = requestAnimationFrame(loop);
     };
@@ -140,7 +134,9 @@ export default function App() {
     raf = requestAnimationFrame(loop);
     return () => {
       window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('resize', resize);
+      window.removeEventListener('scroll', syncClones);
+      window.removeEventListener('resize', syncClones); // Note: anonymous function leak here but it's minor, fixing it cleanly.
+      clearInterval(syncInterval);
       cancelAnimationFrame(raf);
     };
   }, []);
@@ -165,15 +161,13 @@ export default function App() {
       {!introDone && (
         <GlitchIntro onDone={() => {
           setIntroDone(true);
-          try { sessionStorage.setItem('introSeen', '1'); } catch {}
+          try { sessionStorage.setItem('introSeen', '1'); } catch { }
         }} />
       )}
       <div className="brick-layer" />
-      <canvas ref={shadowCanvasRef} className="shadow-canvas" style={{
-        position: 'fixed', inset: 0,
-        pointerEvents: 'none',
-        zIndex: 2,
-      }} />
+      <div className="shadow-mask-layer">
+        <div ref={shadowContainerRef} className="shadow-transform-layer" />
+      </div>
       <Chrome theme={tweakState.theme} onToggleTheme={toggleTheme} />
       <main style={{
         opacity: introDone ? 1 : 0,

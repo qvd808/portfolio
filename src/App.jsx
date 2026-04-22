@@ -6,6 +6,8 @@ import Skills from './components/Skills';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Tweaks, { useTweaks } from './components/Tweaks';
+import NotFound from './components/NotFound';
+import useIsMobile from './hooks/useIsMobile';
 import './index.css';
 
 function Chrome({ theme, onToggleTheme }) {
@@ -15,15 +17,15 @@ function Chrome({ theme, onToggleTheme }) {
         <div className="chrome-left">
           <div className="logo">
             <span className="logo-dot" />
-            <span>vinh<span style={{color:'var(--fg-4)'}}>.</span>dang</span>
-            <span style={{color:'var(--fg-4)', marginLeft:6}}>// eng.</span>
+            <span>vinh<span style={{ color: 'var(--fg-4)' }}>.</span>dang</span>
+            <span style={{ color: 'var(--fg-4)', marginLeft: 6 }}>// eng.</span>
           </div>
         </div>
-        <nav className="chrome-right" style={{display:'flex'}}>
-          <a href="#about" className="nav-link"><span className="num">01</span>about</a>
-          <a href="#skills" className="nav-link"><span className="num">02</span>skills</a>
-          <a href="#projects" className="nav-link"><span className="num">03</span>projects</a>
-          <a href="#contact" className="nav-link"><span className="num">04</span>contact</a>
+        <nav className="chrome-right" style={{ display: 'flex' }}>
+          <a href="#about" className="nav-link">about</a>
+          <a href="#skills" className="nav-link">skills</a>
+          <a href="#projects" className="nav-link">projects</a>
+          <a href="#contact" className="nav-link">contact</a>
           <button className="theme-toggle" onClick={onToggleTheme}>
             {theme === 'dark' ? '◐ DARK' : '◑ CREAM'}
           </button>
@@ -37,8 +39,8 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="build">
-        <span style={{color:'var(--accent)'}}>●</span>
-        <span>build · hand-crafted · {new Date().toISOString().slice(0,10)}</span>
+        <span style={{ color: 'var(--accent)' }}>●</span>
+        <span>build · hand-crafted · {new Date().toISOString().slice(0, 10)}</span>
       </div>
       <div>© 2026 vinh dang · all outputs verified</div>
     </footer>
@@ -47,107 +49,100 @@ function Footer() {
 
 // Elements whose text will cast shadows on the brick wall
 const SHADOW_SELECTORS = '.hero-heading, .section-title, .contact-title';
-// How far the shadow extends past the element (higher = longer shadow)
-const SHADOW_DEPTH = 0.45;
-// Spotlight reveal radius (must match CSS mask in index.css)
-const SPOT_R = 220;
-
-function drawWrapped(ctx, text, x, y, maxWidth, lineHeight) {
-  const words = text.replace(/\s+/g, ' ').trim().split(' ');
-  let line = '';
-  let currY = y;
-  for (const word of words) {
-    const test = line ? `${line} ${word}` : word;
-    if (ctx.measureText(test).width > maxWidth && line) {
-      ctx.fillText(line, x, currY);
-      currY += lineHeight;
-      line = word;
-    } else {
-      line = test;
-    }
-  }
-  if (line) ctx.fillText(line, x, currY);
-}
 
 export default function App() {
+  // ── 404 easter egg ──────────────────────────────────────────────────────────
+  if (window.location.pathname.endsWith('/404')) {
+    return <NotFound />;
+  }
+
   const [tweakState, setTweakState] = useTweaks();
   const [tweaksVisible, setTweaksVisible] = useState(false);
   const [introDone, setIntroDone] = useState(() => {
     try { return sessionStorage.getItem('introSeen') === '1'; } catch { return false; }
   });
-  const shadowCanvasRef = useRef(null);
+  const shadowContainerRef = useRef(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const body = document.body;
+
+    // Skip entire flashlight system on mobile — no mouse, no GPU budget
+    if (isMobile) return;
+
     body.classList.add('spotlight-on');
 
-    const canvas = shadowCanvasRef.current;
-    const sCtx = canvas?.getContext('2d');
+    const container = shadowContainerRef.current;
 
-    const resize = () => {
-      if (!canvas) return;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    const syncClones = () => {
+      if (!container || document.visibilityState === 'hidden') return;
+      const targets = Array.from(document.querySelectorAll(SHADOW_SELECTORS));
+
+      // Build clones if missing
+      if (container.children.length !== targets.length) {
+        container.innerHTML = '';
+        targets.forEach(el => {
+          const clone = el.cloneNode(true);
+          clone.style.position = 'fixed';
+          clone.style.margin = '0';
+          clone.removeAttribute('id');
+          clone.style.pointerEvents = 'none';
+          clone.setAttribute('aria-hidden', 'true');
+          clone.style.boxSizing = 'border-box';
+          // DOM blur thins out text, so we artificially bulk up the clone's text stroke 
+          // and force it black to guarantee a brutally dark, high-contrast shadow.
+          clone.style.webkitTextStroke = '1.5px black';
+          clone.style.color = 'black';
+          container.appendChild(clone);
+        });
+      }
+
+      // READ all rects first (Batch DOM reads)
+      const rects = targets.map(el => el.getBoundingClientRect());
+
+      // WRITE all styles next (Batch DOM writes)
+      targets.forEach((el, i) => {
+        const clone = container.children[i];
+        if (!clone) return;
+        const rect = rects[i];
+
+        if (rect.width === 0 || rect.height === 0) {
+          clone.style.display = 'none';
+          return;
+        }
+        clone.style.display = 'block';
+        clone.style.left = rect.left + 'px';
+        clone.style.top = rect.top + 'px';
+        clone.style.width = rect.width + 'px';
+        clone.style.height = rect.height + 'px';
+      });
     };
-    resize();
-    window.addEventListener('resize', resize);
+
+    // Keep clones aligned on scroll and structural changes
+    window.addEventListener('scroll', syncClones, { passive: true });
+    const onResize = () => {
+      if (container) container.innerHTML = ''; // Force full rebuild
+      syncClones();
+    };
+    window.addEventListener('resize', onResize);
+
+    // Fallback sync for late-loading fonts/images
+    const syncInterval = setInterval(syncClones, 500);
+    // Initial sync
+    syncClones();
 
     let raf;
     let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
     let cx = tx, cy = ty;
-    const shadowColor = 'rgba(0, 0, 0, 0.75)';
 
     const onMove = (e) => { tx = e.clientX; ty = e.clientY; };
 
     const loop = () => {
       cx += (tx - cx) * 0.18;
       cy += (ty - cy) * 0.18;
+      // This is now the ONLY thing happening in the 60fps loop!
       body.style.setProperty('--spot-x', cx + 'px');
       body.style.setProperty('--spot-y', cy + 'px');
-
-
-      if (sCtx && canvas) {
-        sCtx.clearRect(0, 0, canvas.width, canvas.height);
-        sCtx.save();
-
-        // Clip shadows to the spotlight circle so they only appear on the lit wall
-        sCtx.beginPath();
-        sCtx.arc(cx, cy, SPOT_R + 60, 0, Math.PI * 2);
-        sCtx.clip();
-
-        document.querySelectorAll(SHADOW_SELECTORS).forEach(el => {
-          const rect = el.getBoundingClientRect();
-          if (!rect.width || !rect.height) return;
-
-          const st = getComputedStyle(el);
-          const elCX = rect.left + rect.width / 2;
-          const elCY = rect.top + rect.height / 2;
-
-          // Project shadow away from cursor through the element center
-          const dx = (elCX - cx) * SHADOW_DEPTH;
-          const dy = (elCY - cy) * SHADOW_DEPTH;
-
-          // Fade shadow out when element is far from spotlight center
-          const distToSpot = Math.hypot(elCX - cx, elCY - cy);
-          const alpha = Math.max(0, 1 - distToSpot / (SPOT_R * 1.4));
-          if (alpha < 0.02) return;
-
-          sCtx.save();
-          sCtx.globalAlpha = alpha;
-          sCtx.filter = 'blur(3px)';
-          sCtx.fillStyle = shadowColor;
-          sCtx.textBaseline = 'top';
-
-          const fs = parseFloat(st.fontSize);
-          const lh = parseFloat(st.lineHeight) || fs * 1.35;
-          sCtx.font = `${st.fontWeight} ${fs}px ${st.fontFamily}`;
-
-          drawWrapped(sCtx, el.textContent || '', rect.left + dx, rect.top + dy, rect.width, lh);
-          sCtx.restore();
-        });
-
-        sCtx.restore();
-      }
 
       raf = requestAnimationFrame(loop);
     };
@@ -156,10 +151,12 @@ export default function App() {
     raf = requestAnimationFrame(loop);
     return () => {
       window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('resize', resize);
+      window.removeEventListener('scroll', syncClones);
+      window.removeEventListener('resize', onResize);
+      clearInterval(syncInterval);
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     const onMsg = (e) => {
@@ -181,19 +178,19 @@ export default function App() {
       {!introDone && (
         <GlitchIntro onDone={() => {
           setIntroDone(true);
-          try { sessionStorage.setItem('introSeen', '1'); } catch {}
+          try { sessionStorage.setItem('introSeen', '1'); } catch { }
         }} />
       )}
-      <div className="brick-layer" />
-      <canvas ref={shadowCanvasRef} style={{
-        position: 'fixed', inset: 0,
-        pointerEvents: 'none',
-        zIndex: 2,
-      }} />
+      {!isMobile && <div className="brick-layer" />}
+      {!isMobile && (
+        <div className="shadow-mask-layer">
+          <div ref={shadowContainerRef} className="shadow-transform-layer" />
+        </div>
+      )}
       <Chrome theme={tweakState.theme} onToggleTheme={toggleTheme} />
       <main style={{
         opacity: introDone ? 1 : 0,
-        transition: 'opacity 0.8s ease 0.2s',
+        transition: 'opacity 0.5s ease',
         position: 'relative',
         zIndex: 3,
       }}>

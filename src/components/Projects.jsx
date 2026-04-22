@@ -16,12 +16,12 @@ const PROJECTS = [
     stack: ["Markdown", "GIF"],
   },
   {
-    repo: "qvd808/fpga-cpu",
-    title: "FPGA CPU (in progress)",
+    repo: "qvd808/risc-v-logism",
+    title: "RISC-V in Logisim",
     lang: "Verilog",
     langHue: 30,
-    desc: "Designing a CPU on an Altera FPGA. Starting somewhere around Nand2Tetris territory and working toward my own ISA. Open source when it actually runs something.",
-    stack: ["Verilog", "FPGA", "digital logic"],
+    desc: "A RISC-V CPU implementation built in Logisim. Designed from the ground up — ALU, control unit, memory, the works. Open source.",
+    stack: ["Logisim", "RISC-V", "digital logic"],
     wip: true,
   },
   {

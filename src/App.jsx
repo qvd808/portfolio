@@ -52,7 +52,8 @@ const SHADOW_SELECTORS = '.hero-heading, .section-title, .contact-title';
 
 export default function App() {
   // ── 404 easter egg ──────────────────────────────────────────────────────────
-  if (window.location.pathname.endsWith('/404')) {
+  // Check if pathname (ignoring trailing slash) ends with /404
+  if (window.location.pathname.replace(/\/$/, '').endsWith('/404')) {
     return <NotFound />;
   }
 

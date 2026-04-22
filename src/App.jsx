@@ -95,7 +95,7 @@ export default function App() {
     let raf;
     let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
     let cx = tx, cy = ty;
-    const shadowColor = 'rgba(0, 0, 0, 0.75)';
+    const shadowColor = 'oklch(0.08 0.05 250 / 0.7)';
 
     const onMove = (e) => { tx = e.clientX; ty = e.clientY; };
 
@@ -193,7 +193,7 @@ export default function App() {
       <Chrome theme={tweakState.theme} onToggleTheme={toggleTheme} />
       <main style={{
         opacity: introDone ? 1 : 0,
-        transition: 'opacity 0.8s ease 0.2s',
+        transition: 'opacity 0.5s ease',
         position: 'relative',
         zIndex: 3,
       }}>

@@ -615,42 +615,107 @@ body.spotlight-on::after {
 .glitch-splash {
   position: fixed; inset: 0;
   z-index: 100;
-  background: oklch(0.14 0.008 250);
+  background: oklch(0.10 0.012 250);
   display: grid; place-items: center;
+  overflow: hidden;
 }
-.glitch-splash.fading { animation: splash-out 0.6s forwards; }
-@keyframes splash-out { to { opacity: 0; pointer-events: none; } }
+.glitch-splash.fading { animation: splash-out 0.65s forwards; }
+@keyframes splash-out {
+  0%  { opacity: 1; filter: none; }
+  40% { opacity: 1; filter: brightness(1.8) contrast(2); }
+  100%{ opacity: 0; filter: brightness(0.5); pointer-events: none; }
+}
+
+/* Screen flash overlay */
+.lightning-flash {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, rgba(190,225,255,0.55) 0%, rgba(100,160,255,0.25) 40%, transparent 75%);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.08s ease-out;
+}
 
 .glitch-word {
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
   font-size: clamp(48px, 10vw, 128px);
-  color: #fff;
+  color: #e8f0ff;
   text-transform: uppercase;
   letter-spacing: -0.02em;
   position: absolute;
   line-height: 1;
+  user-select: none;
 }
-.glitch-word.layer-base { animation: gl-base 0.6s steps(7) infinite; }
-.glitch-word.layer-top { clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%); opacity: 0.8; animation: gl-up 0.65s steps(7) infinite; }
-.glitch-word.layer-bot { clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%); opacity: 0.8; animation: gl-down 0.375s steps(7) infinite; }
+
+/* Normal idle glitch */
+.glitch-word.layer-base { animation: gl-base 0.9s steps(8) infinite; }
+.glitch-word.layer-top {
+  clip-path: polygon(0 0, 100% 0, 100% 38%, 0 38%);
+  color: rgba(255, 60, 100, 0.9);
+  mix-blend-mode: screen;
+  animation: gl-up 0.7s steps(8) infinite;
+}
+.glitch-word.layer-bot {
+  clip-path: polygon(0 62%, 100% 62%, 100% 100%, 0 100%);
+  color: rgba(0, 220, 255, 0.9);
+  mix-blend-mode: screen;
+  animation: gl-down 0.45s steps(8) infinite;
+}
+
+/* Lightning-hit intense glitch */
+.glitch-word.glitch-intense.layer-base {
+  animation: gl-intense 0.08s steps(3) infinite;
+  filter: brightness(1.6) contrast(1.4);
+}
+.glitch-word.glitch-intense.layer-top {
+  animation: gl-slice-r 0.06s steps(2) infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 40%);
+  color: rgba(255, 50, 80, 1);
+  filter: brightness(2.0);
+}
+.glitch-word.glitch-intense.layer-bot {
+  animation: gl-slice-l 0.05s steps(2) infinite;
+  clip-path: polygon(0 65%, 100% 60%, 100% 100%, 0 100%);
+  color: rgba(0, 240, 255, 1);
+  filter: brightness(2.0);
+}
+
 @keyframes gl-base {
-  0%   { text-shadow: 0.05em 0 0 rgba(255,0,0,.75), -0.025em -0.05em 0 rgba(0,255,0,.75), -0.025em 0.05em 0 rgba(0,0,255,.75); }
-  14%  { text-shadow: 0.05em 0 0 rgba(255,0,0,.75), -0.05em -0.025em 0 rgba(0,255,0,.75), -0.025em 0.05em 0 rgba(0,0,255,.75); }
-  29%  { text-shadow: -0.05em -0.025em 0 rgba(255,0,0,.75), 0.025em 0.025em 0 rgba(0,255,0,.75), -0.05em -0.05em 0 rgba(0,0,255,.75); }
-  50%  { text-shadow: 0.025em 0.05em 0 rgba(255,0,0,.75), 0.05em 0 0 rgba(0,255,0,.75), 0 -0.05em 0 rgba(0,0,255,.75); }
-  75%  { text-shadow: -0.025em 0 0 rgba(255,0,0,.75), -0.025em -0.025em 0 rgba(0,255,0,.75), -0.025em -0.05em 0 rgba(0,0,255,.75); }
-  100% { text-shadow: -0.025em 0 0 rgba(255,0,0,.75), -0.025em -0.025em 0 rgba(0,255,0,.75), -0.025em -0.05em 0 rgba(0,0,255,.75); }
+  0%   { text-shadow: 0.06em 0 0 rgba(255,40,80,.7), -0.03em -0.06em 0 rgba(0,240,180,.7), -0.03em 0.06em 0 rgba(40,80,255,.7); transform: translate(0,0); }
+  12%  { text-shadow: 0.06em 0 0 rgba(255,40,80,.7), -0.06em -0.03em 0 rgba(0,240,180,.7), -0.03em 0.06em 0 rgba(40,80,255,.7); transform: translate(-1px, 0); }
+  25%  { text-shadow: -0.06em -0.03em 0 rgba(255,40,80,.7), 0.03em 0.03em 0 rgba(0,240,180,.7), -0.06em -0.06em 0 rgba(40,80,255,.7); transform: translate(2px, -1px); }
+  37%  { text-shadow: 0.06em 0 0 rgba(255,40,80,.7), 0.06em -0.06em 0 rgba(0,240,180,.7), -0.03em 0.06em 0 rgba(40,80,255,.7); transform: translate(-2px, 1px); }
+  50%  { text-shadow: 0.03em 0.06em 0 rgba(255,40,80,.7), 0.06em 0 0 rgba(0,240,180,.7), 0 -0.06em 0 rgba(40,80,255,.7); transform: translate(0, 0); }
+  62%  { text-shadow: -0.03em 0 0 rgba(255,40,80,.7), -0.06em -0.06em 0 rgba(0,240,180,.7), 0.03em 0.06em 0 rgba(40,80,255,.7); transform: translate(1px, 0); }
+  75%  { text-shadow: -0.03em 0 0 rgba(255,40,80,.7), -0.03em -0.03em 0 rgba(0,240,180,.7), -0.03em -0.06em 0 rgba(40,80,255,.7); transform: translate(-1px, 1px); }
+  100% { text-shadow: -0.03em 0 0 rgba(255,40,80,.7), -0.03em -0.03em 0 rgba(0,240,180,.7), -0.03em -0.06em 0 rgba(40,80,255,.7); transform: translate(0, 0); }
 }
 @keyframes gl-up {
-  0%,100% { transform: translate(-0.025em, -0.0125em); }
-  40% { transform: translate(-0.04em, -0.1em); }
-  60% { transform: translate(0.015em, 0.025em); }
+  0%,100% { transform: translate(-0.03em, -0.015em); }
+  20% { transform: translate(-0.08em, -0.12em); }
+  40% { transform: translate(0.06em, 0); }
+  70% { transform: translate(0.02em, 0.03em); }
 }
 @keyframes gl-down {
-  0%,100% { transform: translate(0.015em, 0.025em); }
-  40% { transform: translate(0.04em, 0.1em); }
-  60% { transform: translate(-0.025em, -0.0125em); }
+  0%,100% { transform: translate(0.02em, 0.03em); }
+  30% { transform: translate(0.08em, 0.12em); }
+  60% { transform: translate(-0.04em, -0.015em); }
+}
+@keyframes gl-intense {
+  0%   { transform: translate(-6px, 2px) skewX(-4deg); text-shadow: 0.1em 0 0 rgba(255,0,80,1), -0.1em 0 0 rgba(0,200,255,1); }
+  33%  { transform: translate(8px, -3px) skewX(6deg); text-shadow: -0.12em 0 0 rgba(255,0,80,1), 0.08em 0 0 rgba(0,200,255,1); }
+  66%  { transform: translate(-4px, 4px) skewX(-2deg); text-shadow: 0.08em 0.04em 0 rgba(255,0,80,1), -0.06em -0.04em 0 rgba(0,200,255,1); }
+  100% { transform: translate(5px, -2px) skewX(3deg); text-shadow: 0 0 0 transparent; }
+}
+@keyframes gl-slice-r {
+  0%   { transform: translate(18px, 0); clip-path: polygon(0 0, 100% 0, 100% 35%, 0 42%); }
+  50%  { transform: translate(-12px, 2px); clip-path: polygon(0 5%, 100% 0, 100% 38%, 0 33%); }
+  100% { transform: translate(22px, -2px); clip-path: polygon(0 0, 100% 5%, 100% 40%, 0 37%); }
+}
+@keyframes gl-slice-l {
+  0%   { transform: translate(-16px, 0); clip-path: polygon(0 62%, 100% 58%, 100% 100%, 0 100%); }
+  50%  { transform: translate(14px, -2px); clip-path: polygon(0 68%, 100% 64%, 100% 100%, 0 100%); }
+  100% { transform: translate(-20px, 2px); clip-path: polygon(0 60%, 100% 65%, 100% 100%, 0 100%); }
 }
 
 /* ===== Terminal box in hero ===== */

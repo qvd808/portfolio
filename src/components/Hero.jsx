@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import ShatterImage from './ShatterImage';
+import { useState, useEffect, lazy, Suspense } from 'react';
+const ShatterImage = lazy(() => import('./ShatterImage'));
 import headshotSrc from '../assets/HeadShot.jpeg';
 
 const COMMANDS = [
@@ -119,7 +119,9 @@ export default function Hero() {
 
         <div>
           <div className="portrait-wrap">
-            <ShatterImage src={headshotSrc} alt="Vinh Dang" />
+            <Suspense fallback={<div style={{width:'100%',height:'100%',background:'var(--bg-2)'}}/>}>
+              <ShatterImage src={headshotSrc} alt="Vinh Dang" />
+            </Suspense>
             <div className="portrait-overlay" />
             <div className="portrait-badge">
               <span>vinh.jpeg</span>

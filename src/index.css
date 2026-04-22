@@ -1244,6 +1244,11 @@ body.spotlight-on::after {
   );
 }
 
+/* Disable spotlight bloom on touch/mobile devices */
+@media (pointer: coarse) {
+  body.spotlight-on::after { display: none; }
+}
+
 /* ===== Glitch intro splash ===== */
 .glitch-splash {
   position: fixed;
@@ -1290,13 +1295,16 @@ body.spotlight-on::after {
 .glitch-word {
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
-  font-size: clamp(48px, 10vw, 128px);
+  font-size: clamp(32px, 12vw, 128px);
   color: #e8f0ff;
   text-transform: uppercase;
   letter-spacing: -0.02em;
   position: absolute;
   line-height: 1;
   user-select: none;
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
 }
 
 /* Normal idle glitch */

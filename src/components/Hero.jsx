@@ -1,6 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 const ShatterImage = lazy(() => import('./ShatterImage'));
 import headshotSrc from '../assets/HeadShot.jpeg';
+import useIsMobile from '../hooks/useIsMobile';
 
 const COMMANDS = [
   { cmd: "whoami", out: "vinh // low-level curious · fresh grad · broke" },
@@ -58,6 +59,7 @@ function GlitchText({ children }) {
 
 export default function Hero() {
   const { cmd, out, showCursor } = useCommandCycle(COMMANDS);
+  const useIsMobileFlag = useIsMobile();
 
   return (
     <section className="hero" id="hero">
@@ -119,9 +121,13 @@ export default function Hero() {
 
         <div>
           <div className="portrait-wrap">
-            <Suspense fallback={<div style={{width:'100%',height:'100%',background:'var(--bg-2)'}}/>}>
-              <ShatterImage src={headshotSrc} alt="Vinh Dang" />
-            </Suspense>
+            {useIsMobileFlag ? (
+              <img src={headshotSrc} alt="Vinh Dang" style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <Suspense fallback={<div style={{width:'100%',height:'100%',background:'var(--bg-2)'}}/>}>
+                <ShatterImage src={headshotSrc} alt="Vinh Dang" />
+              </Suspense>
+            )}
             <div className="portrait-overlay" />
             <div className="portrait-badge">
               <span>vinh.jpeg</span>

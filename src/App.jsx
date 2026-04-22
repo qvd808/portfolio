@@ -6,6 +6,7 @@ import Skills from './components/Skills';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Tweaks, { useTweaks } from './components/Tweaks';
+import useIsMobile from './hooks/useIsMobile';
 import './index.css';
 
 function Chrome({ theme, onToggleTheme }) {
@@ -55,9 +56,14 @@ export default function App() {
     try { return sessionStorage.getItem('introSeen') === '1'; } catch { return false; }
   });
   const shadowContainerRef = useRef(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const body = document.body;
+
+    // Skip entire flashlight system on mobile — no mouse, no GPU budget
+    if (isMobile) return;
+
     body.classList.add('spotlight-on');
 
     const container = shadowContainerRef.current;
@@ -140,7 +146,7 @@ export default function App() {
       clearInterval(syncInterval);
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     const onMsg = (e) => {
@@ -165,10 +171,12 @@ export default function App() {
           try { sessionStorage.setItem('introSeen', '1'); } catch { }
         }} />
       )}
-      <div className="brick-layer" />
-      <div className="shadow-mask-layer">
-        <div ref={shadowContainerRef} className="shadow-transform-layer" />
-      </div>
+      {!isMobile && <div className="brick-layer" />}
+      {!isMobile && (
+        <div className="shadow-mask-layer">
+          <div ref={shadowContainerRef} className="shadow-transform-layer" />
+        </div>
+      )}
       <Chrome theme={tweakState.theme} onToggleTheme={toggleTheme} />
       <main style={{
         opacity: introDone ? 1 : 0,

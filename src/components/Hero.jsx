@@ -341,10 +341,10 @@ export default function Hero() {
             <a href="#projects" className="btn primary">
               see projects <span className="arrow">→</span>
             </a>
-            <a href="https://github.com/qvd808" target="_blank" className="btn">
+            <a href="https://github.com/qvd808" target="_blank" rel="noreferrer" className="btn" aria-label="View my GitHub profile">
               github ↗
             </a>
-            <a href="https://drive.google.com/file/d/1IM4YwjO-NO8uF1Qor7D95fOap3vGtt5V/view?usp=drive_link" target="_blank" className="btn">
+            <a href="https://drive.google.com/file/d/1IM4YwjO-NO8uF1Qor7D95fOap3vGtt5V/view?usp=drive_link" target="_blank" rel="noreferrer" className="btn" aria-label="View my resume (Google Drive)">
               resume ↗
             </a>
           </div>
@@ -353,10 +353,15 @@ export default function Hero() {
         <div>
           <div className="portrait-wrap">
             {isMobile ? (
-              <img src={headshotSrc} alt="Vinh Dang" style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img 
+                src={headshotSrc} 
+                alt="Vinh Dang" 
+                fetchpriority="high"
+                style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }} 
+              />
             ) : (
               <Suspense fallback={<div style={{ width: '100%', height: '100%', background: 'var(--bg-2)' }} />}>
-                <ShatterImage src={headshotSrc} alt="Vinh Dang" />
+                <ShatterImage src={headshotSrc} alt="Vinh Dang" fetchpriority="high" />
               </Suspense>
             )}
             <div className="portrait-overlay" />

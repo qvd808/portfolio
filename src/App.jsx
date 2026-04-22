@@ -21,12 +21,12 @@ function Chrome({ theme, onToggleTheme }) {
             <span style={{ color: 'var(--fg-4)', marginLeft: 6 }}>// eng.</span>
           </div>
         </div>
-        <nav className="chrome-right" style={{ display: 'flex' }}>
+        <nav className="chrome-right" style={{ display: 'flex' }} aria-label="Main Navigation">
           <a href="#about" className="nav-link">about</a>
           <a href="#skills" className="nav-link">skills</a>
           <a href="#projects" className="nav-link">projects</a>
           <a href="#contact" className="nav-link">contact</a>
-          <button className="theme-toggle" onClick={onToggleTheme}>
+          <button className="theme-toggle" onClick={onToggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
             {theme === 'dark' ? '◐ DARK' : '◑ CREAM'}
           </button>
         </nav>
@@ -75,9 +75,15 @@ export default function App() {
 
     const container = shadowContainerRef.current;
 
+    let raf;
+    let syncQueued = false;
+
     const syncClones = () => {
       if (!container || document.visibilityState === 'hidden') return;
+      syncQueued = false; // Reset queue flag
+
       const targets = Array.from(document.querySelectorAll(SHADOW_SELECTORS));
+      if (!targets.length) return;
 
       // Build clones if missing
       if (container.children.length !== targets.length) {
@@ -90,18 +96,16 @@ export default function App() {
           clone.style.pointerEvents = 'none';
           clone.setAttribute('aria-hidden', 'true');
           clone.style.boxSizing = 'border-box';
-          // DOM blur thins out text, so we artificially bulk up the clone's text stroke 
-          // and force it black to guarantee a brutally dark, high-contrast shadow.
           clone.style.webkitTextStroke = '1.5px black';
           clone.style.color = 'black';
           container.appendChild(clone);
         });
       }
 
-      // READ all rects first (Batch DOM reads)
+      // Batch DOM Reads
       const rects = targets.map(el => el.getBoundingClientRect());
 
-      // WRITE all styles next (Batch DOM writes)
+      // Batch DOM Writes
       targets.forEach((el, i) => {
         const clone = container.children[i];
         if (!clone) return;
@@ -119,20 +123,26 @@ export default function App() {
       });
     };
 
+    const queueSync = () => {
+      if (!syncQueued) {
+        syncQueued = true;
+        requestAnimationFrame(syncClones);
+      }
+    };
+
     // Keep clones aligned on scroll and structural changes
-    window.addEventListener('scroll', syncClones, { passive: true });
+    window.addEventListener('scroll', queueSync, { passive: true });
     const onResize = () => {
       if (container) container.innerHTML = ''; // Force full rebuild
-      syncClones();
+      queueSync();
     };
     window.addEventListener('resize', onResize);
 
-    // Fallback sync for late-loading fonts/images
-    const syncInterval = setInterval(syncClones, 500);
+    // Throttled fallback sync for late-loading fonts/images
+    const syncInterval = setInterval(queueSync, 1000);
     // Initial sync
-    syncClones();
+    queueSync();
 
-    let raf;
     let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
     let cx = tx, cy = ty;
 
@@ -141,7 +151,6 @@ export default function App() {
     const loop = () => {
       cx += (tx - cx) * 0.18;
       cy += (ty - cy) * 0.18;
-      // This is now the ONLY thing happening in the 60fps loop!
       body.style.setProperty('--spot-x', cx + 'px');
       body.style.setProperty('--spot-y', cy + 'px');
 
@@ -152,7 +161,7 @@ export default function App() {
     raf = requestAnimationFrame(loop);
     return () => {
       window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('scroll', syncClones);
+      window.removeEventListener('scroll', queueSync);
       window.removeEventListener('resize', onResize);
       clearInterval(syncInterval);
       cancelAnimationFrame(raf);

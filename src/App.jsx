@@ -69,7 +69,7 @@ export default function App() {
     const container = shadowContainerRef.current;
 
     const syncClones = () => {
-      if (!container) return;
+      if (!container || document.visibilityState === 'hidden') return;
       const targets = Array.from(document.querySelectorAll(SHADOW_SELECTORS));
 
       // Build clones if missing
@@ -91,11 +91,15 @@ export default function App() {
         });
       }
 
-      // Update positions
+      // READ all rects first (Batch DOM reads)
+      const rects = targets.map(el => el.getBoundingClientRect());
+
+      // WRITE all styles next (Batch DOM writes)
       targets.forEach((el, i) => {
         const clone = container.children[i];
         if (!clone) return;
-        const rect = el.getBoundingClientRect();
+        const rect = rects[i];
+        
         if (rect.width === 0 || rect.height === 0) {
           clone.style.display = 'none';
           return;

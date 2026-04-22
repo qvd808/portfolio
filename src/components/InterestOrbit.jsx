@@ -143,7 +143,7 @@ export default function InterestOrbit() {
     <div style={{ marginTop: 22, marginBottom: 6 }}>
       <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`}
         style={{ width: '100%', maxWidth: 640, display: 'block', userSelect: 'none', touchAction: 'none' }} />
-      <div className="mono" style={{ fontSize: 11, color: 'var(--fg-4)', marginTop: 6, letterSpacing: '.04em' }}>
+      <div className="font-mono" style={{ fontSize: 11, color: 'var(--fg-4)', marginTop: 6, letterSpacing: '.04em' }}>
         {caption} <span style={{ opacity: .5 }}>· drag the dot ↗</span>
       </div>
     </div>

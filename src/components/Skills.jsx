@@ -206,89 +206,100 @@ export default function Skills() {
   useEffect(() => { setSel(0); }, [catIdx]);
 
   const handleViewSwitch = (next) => {
-    if (next === 'stats') setStatsKey(k => k + 1); // remount → bars reset to 0 and run
+    if (next === 'stats') setStatsKey(k => k + 1);
     setView(next);
   };
 
   return (
-    <section className="section" id="skills" ref={ref}>
-      <div className="section-label">§ capabilities</div>
-      <h2 className="section-title">
-        Pick a category. <em className="serif">Hover the nodes — I wrote one honest sentence about each one.</em>
+    <section className="max-w-page mx-auto px-5 py-[calc(80px*var(--density))] [contain:layout_style]" id="skills" ref={ref}>
+      <div className="section-label font-mono text-xs text-fg-4 tracking-[0.04em] uppercase flex items-center gap-2.5 mb-6">§ capabilities</div>
+      <h2 className="section-title font-medium tracking-[-0.025em] leading-[1.1] max-w-[760px] mb-3">
+        Pick a category. <em className="font-serif italic tracking-[-0.01em]">Hover the nodes — I wrote one honest sentence about each one.</em>
       </h2>
-      <p className="section-sub">
+      <p className="text-lg text-fg-3 max-w-[640px] mb-12" style={{ textWrap: 'pretty' }}>
         Click a node to lock it. Switch to gh stats to see my actual language breakdown.
       </p>
 
-      <div style={{ display: 'flex', gap: 10, marginBottom: 20, alignItems: 'center' }}>
-        <div className="seg" style={{ display: 'inline-flex', width: 'auto' }}>
-          <button className={view === 'explore' ? 'active' : ''} onClick={() => handleViewSwitch('explore')}
-            style={{ padding: '8px 14px' }}>◐ explore</button>
-          <button className={view === 'stats' ? 'active' : ''} onClick={() => handleViewSwitch('stats')}
-            style={{ padding: '8px 14px' }}>▁▃▅ gh stats</button>
+      <div className="flex gap-2.5 mb-5 items-center">
+        <div className="inline-flex bg-bg-2 border border-border rounded overflow-hidden">
+          <button
+            className={`flex-1 bg-transparent border-none px-3.5 py-2 font-inherit text-2xs cursor-pointer uppercase tracking-[0.04em] transition-[background,color] duration-150 ${view === 'explore' ? 'bg-accent text-[oklch(0.12_0.01_250)] font-semibold' : 'text-fg-3 hover:text-fg'}`}
+            onClick={() => handleViewSwitch('explore')}
+          >◐ explore</button>
+          <button
+            className={`flex-1 bg-transparent border-none px-3.5 py-2 font-inherit text-2xs cursor-pointer uppercase tracking-[0.04em] transition-[background,color] duration-150 ${view === 'stats' ? 'bg-accent text-[oklch(0.12_0.01_250)] font-semibold' : 'text-fg-3 hover:text-fg'}`}
+            onClick={() => handleViewSwitch('stats')}
+          >▁▃▅ gh stats</button>
         </div>
       </div>
 
-      <div className="skills-explorer">
+      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 lg:gap-8 lg:items-start">
         {view === 'explore' ? (
           <>
-            <div className="cat-list">
+            <div className="flex flex-col gap-2">
               {CATEGORIES.map((c, i) => (
                 <button
                   key={c.id}
-                  className={`cat-card ${catIdx === i ? 'active' : ''}`}
+                  className={`text-left bg-bg-1 border border-border border-l-[3px] rounded-md px-4 py-3.5 cursor-pointer transition-[background,border-color] duration-200 font-inherit text-inherit grid grid-cols-[1fr_auto] gap-1 items-center ${catIdx === i ? 'bg-bg-2 border-border-strong' : 'hover:bg-bg-2 hover:border-border-strong'}`}
                   onClick={() => setCatIdx(i)}
-                  style={{ '--cat-hue': c.accent }}
+                  style={{
+                    '--cat-hue': c.accent,
+                    borderLeftColor: catIdx === i ? `oklch(0.78 0.16 ${c.accent})` : undefined,
+                  }}
                 >
-                  <div className="cat-code">{c.code}</div>
-                  <div className="cat-title">{c.title}</div>
-                  <div className="cat-arrow">{catIdx === i ? '▶' : ' '}</div>
+                  <div className="font-mono text-2xs text-fg-4 tracking-[0.05em] col-start-1 row-start-1">{c.code}</div>
+                  <div className={`text-lg font-medium col-start-1 row-start-2 tracking-[-0.01em] ${catIdx === i ? '' : 'text-fg'}`}
+                    style={catIdx === i ? { color: `oklch(0.78 0.16 ${c.accent})` } : undefined}
+                  >{c.title}</div>
+                  <div className="col-start-2 row-start-1 row-end-4 text-sm self-center"
+                    style={{ color: `oklch(0.78 0.16 ${c.accent})` }}
+                  >{catIdx === i ? '▶' : ' '}</div>
                 </button>
               ))}
             </div>
 
-            <div className="cat-stage">
-              <div className="cat-stage-head">
+            <div className="bg-bg-1 border border-border rounded-lg p-5 flex flex-col gap-3">
+              <div className="flex justify-between items-end pb-3 border-b border-dashed border-border">
                 <div>
-                  <div className="mono" style={{ fontSize: 10, color: 'var(--fg-4)', letterSpacing: '0.05em' }}>
+                  <div className="font-mono text-2xs text-fg-4 tracking-[0.05em]">
                     {cat.code.replace('§ ', '').toUpperCase()}
                   </div>
-                  <div style={{ fontSize: 18, fontWeight: 500, marginTop: 2 }}>{cat.title}</div>
+                  <div className="text-[18px] font-medium mt-0.5">{cat.title}</div>
                 </div>
-                <div className="mono" style={{ fontSize: 10, color: 'var(--fg-4)' }}>
+                <div className="font-mono text-2xs text-fg-4">
                   hover · click to pin
                 </div>
               </div>
 
-              <div style={{ position: 'relative' }}>
+              <div className="relative">
                 <Constellation category={cat} selected={sel} setSelected={setSel} />
               </div>
 
-              <div className="cat-detail">
-                <div className="cat-detail-name mono">
+              <div className="p-3.5 px-4 bg-bg-2 border border-border rounded-md min-h-[66px]">
+                <div className="text-base font-medium text-fg mb-1 flex items-center gap-2 font-mono">
                   <span style={{ color: `oklch(0.78 0.16 ${cat.accent})` }}>●</span> {selectedItem.name}
                 </div>
-                <div className="cat-detail-blurb">{selectedItem.detail}</div>
+                <div className="text-base text-fg-2 leading-normal">{selectedItem.detail}</div>
               </div>
             </div>
           </>
         ) : (
           <>
-            <div className="cat-list">
-              <div className="cat-card active" style={{ cursor: 'default', '--cat-hue': '200' }}>
-                <div className="cat-code">§ telemetry</div>
-                <div className="cat-title">Language Activity</div>
+            <div className="flex flex-col gap-2">
+              <div className="text-left bg-bg-2 border border-border border-l-[3px] rounded-md px-4 py-3.5 font-inherit text-inherit grid grid-cols-[1fr_auto] gap-1 items-center cursor-default" style={{ borderLeftColor: 'oklch(0.78 0.16 200)' }}>
+                <div className="font-mono text-2xs text-fg-4 tracking-[0.05em]">§ telemetry</div>
+                <div className="text-lg font-medium tracking-[-0.01em]" style={{ color: 'oklch(0.78 0.16 200)' }}>Language Activity</div>
               </div>
-              <p style={{ fontSize: 11, color: 'var(--fg-4)', padding: '12px', lineHeight: 1.6, fontFamily: 'JetBrains Mono, monospace' }}>
+              <p className="text-xs text-fg-4 p-3 leading-[1.6] font-mono">
                 // live feed from github.com<br />
                 // recency-weighted<br />
                 // updated daily
               </p>
-              <div style={{ padding: '0 12px', fontSize: 10, color: 'var(--fg-4)', opacity: 0.6 }}>
+              <div className="px-3 text-2xs text-fg-4 opacity-60">
                 Newer commits weigh more heavily on the results than legacy code.
               </div>
             </div>
-            <div className="cat-stage" style={{ padding: 0 }}>
+            <div className="bg-bg-1 border border-border rounded-lg p-0">
               <LangStats key={statsKey} />
             </div>
           </>

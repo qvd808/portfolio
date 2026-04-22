@@ -114,18 +114,22 @@ function HeroLightning() {
 function Terminal() {
   const { cmd, out, cursor } = useTyping(COMMANDS);
   return (
-    <div className="terminal-box">
-      <div className="terminal-head">
-        <span className="t-dot r" /><span className="t-dot y" /><span className="t-dot g" />
-        <span className="t-title">— nvim — vinh@arch ~</span>
+    <div className="mt-7 bg-[oklch(0.12_0.008_250)] border border-border-strong rounded-md overflow-hidden font-mono shadow-[0_12px_40px_oklch(0_0_0/0.3)] [html[data-theme=light]_&]:bg-[oklch(0.99_0.01_85)] [html[data-theme=light]_&]:shadow-[0_8px_24px_oklch(0.3_0_0/0.08)]">
+      <div className="flex items-center gap-1.5 px-3 py-2 bg-[oklch(0.17_0.008_250)] border-b border-border [html[data-theme=light]_&]:bg-[oklch(0.93_0.015_85)]">
+        <span className="w-2.5 h-2.5 rounded-full bg-[oklch(0.65_0.18_25)]" />
+        <span className="w-2.5 h-2.5 rounded-full bg-[oklch(0.78_0.14_75)]" />
+        <span className="w-2.5 h-2.5 rounded-full bg-[oklch(0.72_0.15_140)]" />
+        <span className="ml-2.5 text-2xs text-fg-4">— nvim — vinh@arch ~</span>
       </div>
-      <div className="terminal-body">
-        <div className="t-line">
-          <span className="t-prompt">vinh@arch</span><span className="t-sep">:</span>
-          <span className="t-path">~</span><span className="t-sep">$</span>
-          <span className="t-cmd">{cmd}{cursor && <span className="glitch-cursor" />}</span>
+      <div className="px-4 py-3.5 text-[12.5px] min-h-[72px]">
+        <div className="flex flex-wrap gap-1 items-center">
+          <span className="text-[oklch(0.72_0.15_140)] [html[data-theme=light]_&]:text-[oklch(0.5_0.15_140)]">vinh@arch</span>
+          <span className="text-fg-4">:</span>
+          <span className="text-[oklch(0.7_0.14_220)] [html[data-theme=light]_&]:text-[oklch(0.45_0.15_220)]">~</span>
+          <span className="text-fg-4">$</span>
+          <span className="text-fg ml-1">{cmd}{cursor && <span className="inline-block w-2 h-3.5 bg-accent animate-blink ml-0.5 align-[-2px]" />}</span>
         </div>
-        {out && <div className="t-out">{out}</div>}
+        {out && <div className="text-fg-3 mt-2 text-sm">{out}</div>}
       </div>
     </div>
   );
@@ -133,23 +137,27 @@ function Terminal() {
 
 export default function Hero() {
   return (
-    <section className="hero" id="hero" style={{ position: 'relative', overflow: 'hidden' }}>
+    <section className="max-w-page mx-auto px-5 pt-20 pb-10 min-h-[calc(100vh-56px)] flex flex-col justify-center gap-10 relative overflow-hidden" id="hero">
       <HeroLightning />
 
-      <div className="hero-status-strip">
-        <span className="status-chip live"><span className="dot" /> OPEN TO WORK</span>
-        <span className="status-chip"><span className="dot" style={{ background: 'var(--fg-3)' }} /> VANCOUVER, BC</span>
-        <span className="status-chip">SFU · B.SC 2025</span>
-        <span className="status-chip">WILL RELOCATE</span>
+      <div className="flex items-center gap-3.5 flex-wrap font-mono text-xs text-fg-3 pb-5 border-b border-dashed border-border">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-accent-dim border border-accent-border rounded-[4px] text-accent">
+          <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse-dot shadow-[0_0_8px_currentColor]" /> OPEN TO WORK
+        </span>
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-bg-2 border border-border rounded-[4px]">
+          <span className="w-1.5 h-1.5 rounded-full bg-fg-3" /> VANCOUVER, BC
+        </span>
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-bg-2 border border-border rounded-[4px]">SFU · B.SC 2025</span>
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-bg-2 border border-border rounded-[4px]">WILL RELOCATE</span>
       </div>
 
-      <div className="hero-grid">
+      <div className="grid grid-cols-1 gap-10 items-start lg:grid-cols-[1fr_280px] lg:gap-[60px]">
         <div>
-          <div className="mono" style={{ fontSize: 11, color: 'var(--fg-4)', marginBottom: 18, letterSpacing: '.04em' }}>
-            ~/vinh <span style={{ color: 'var(--accent)' }}>§</span> hi there 👋
+          <div className="font-mono text-xs text-fg-4 mb-[18px] tracking-[.04em]">
+            ~/vinh <span className="text-accent">§</span> hi there 👋
           </div>
 
-          <h1 className="hero-heading">
+          <h1 className="hero-heading font-normal tracking-[-0.035em] leading-[1.02] text-fg">
             My attention span is a <GlitchText><StrikeUnderline>distributed system.</StrikeUnderline></GlitchText>
           </h1>
 
@@ -157,32 +165,41 @@ export default function Hero() {
 
           <Terminal />
 
-          <p className="hero-sub">
+          <p className="text-xl text-fg-2 max-w-[580px] mt-7" style={{ textWrap: 'pretty' }}>
             No single specialty &mdash; just a habit. Something looks hard, I spend the day on it,
             something runs, I go find the next thing. Currently stuck between a RISC-V CPU on
-            an Altera board and learning Zig. Send help <span style={{ opacity: .7 }}>(or an offer).</span>
+            an Altera board and learning Zig. Send help <span className="opacity-70">(or an offer).</span>
           </p>
 
-          <div className="cta-row">
-            <a href="#projects" className="btn primary">see projects <span className="arrow">→</span></a>
-            <a href="https://github.com/qvd808" target="_blank" rel="noreferrer" className="btn">github ↗</a>
-            <a href="https://drive.google.com/file/d/1IM4YwjO-NO8uF1Qor7D95fOap3vGtt5V/view" target="_blank" rel="noreferrer" className="btn">resume ↗</a>
+          <div className="flex gap-2.5 mt-7 flex-wrap">
+            <a href="#projects" className="font-mono text-sm px-3.5 py-2.5 rounded border border-accent bg-accent text-[oklch(0.12_0.01_250)] font-semibold cursor-pointer inline-flex items-center gap-2 no-underline hover:brightness-[1.08] transition-[filter] duration-150">
+              see projects <span className="transition-transform duration-150 group-hover:translate-x-0.5">→</span>
+            </a>
+            <a href="https://github.com/qvd808" target="_blank" rel="noreferrer" className="font-mono text-sm px-3.5 py-2.5 rounded border border-border bg-bg-2 text-fg cursor-pointer inline-flex items-center gap-2 no-underline hover:bg-bg-3 hover:border-border-strong transition-[background,border-color] duration-150">
+              github ↗
+            </a>
+            <a href="https://drive.google.com/file/d/1IM4YwjO-NO8uF1Qor7D95fOap3vGtt5V/view" target="_blank" rel="noreferrer" className="font-mono text-sm px-3.5 py-2.5 rounded border border-border bg-bg-2 text-fg cursor-pointer inline-flex items-center gap-2 no-underline hover:bg-bg-3 hover:border-border-strong transition-[background,border-color] duration-150">
+              resume ↗
+            </a>
           </div>
         </div>
 
         <div>
-          <div className="portrait-wrap">
-            {/* Restored the shatter image effect */}
+          <div className="relative aspect-[3/4] rounded-lg overflow-hidden border border-border bg-bg-2 mb-4 cursor-crosshair">
             <ShatterImage src={headshot} alt="Vinh Dang" />
-            <div className="portrait-overlay" />
-            <div className="portrait-badge"><span>vinh.jpeg</span><span style={{ color: 'var(--accent)' }}>●</span></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[color-mix(in_oklab,var(--bg)_80%,transparent)] pointer-events-none" style={{ backgroundPosition: '0 40%' }} />
+            <div className="absolute bottom-2.5 left-2.5 right-2.5 flex justify-between items-center font-mono text-2xs text-fg">
+              <span>vinh.jpeg</span><span className="text-accent">●</span>
+            </div>
           </div>
-          <div className="hero-card">
-            <div className="hero-card-header"><span>NOW</span><span>2026.Q2</span></div>
-            <div className="hero-card-row"><span className="k">obsessing over</span><span className="v">FPGA CPU</span></div>
-            <div className="hero-card-row"><span className="k">learning</span><span className="v">Zig</span></div>
-            <div className="hero-card-row"><span className="k">editor</span><span className="v">nvim 🚀</span></div>
-            <div className="hero-card-row"><span className="k">status</span><span className="v" style={{ color: 'var(--accent)' }}>broke + curious</span></div>
+          <div className="bg-bg-1 border border-border rounded-lg p-4 font-mono text-xs text-fg-3">
+            <div className="flex justify-between items-center pb-3 mb-3 border-b border-border text-fg-4 text-2xs uppercase tracking-[0.05em]">
+              <span>NOW</span><span>2026.Q2</span>
+            </div>
+            <div className="flex justify-between items-center py-1.5"><span className="text-fg-4">obsessing over</span><span className="text-fg">FPGA CPU</span></div>
+            <div className="flex justify-between items-center py-1.5"><span className="text-fg-4">learning</span><span className="text-fg">Zig</span></div>
+            <div className="flex justify-between items-center py-1.5"><span className="text-fg-4">editor</span><span className="text-fg">nvim 🚀</span></div>
+            <div className="flex justify-between items-center py-1.5"><span className="text-fg-4">status</span><span className="text-accent">broke + curious</span></div>
           </div>
         </div>
       </div>

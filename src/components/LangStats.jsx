@@ -84,6 +84,24 @@ function useLangStats() {
   return { data, error };
 }
 
+function LangPanelHead({ children, meta }) {
+  return (
+    <div className="flex justify-between items-baseline pb-3.5 mb-4 border-b border-dashed border-border">
+      <h3 className="text-base font-mono font-medium text-fg">{children}</h3>
+      <span className="font-mono text-2xs text-fg-4">{meta}</span>
+    </div>
+  );
+}
+
+function LangRow({ name, children }) {
+  return (
+    <div className="grid grid-cols-[90px_1fr_50px] gap-3.5 items-center py-2 font-mono text-sm">
+      <span className="text-fg">{name}</span>
+      {children}
+    </div>
+  );
+}
+
 export default function LangStats() {
   const { data, error } = useLangStats();
   const [running, setRunning] = useState(false);
@@ -98,12 +116,9 @@ export default function LangStats() {
 
   if (error) {
     return (
-      <div className="lang-panel" style={{ padding: 20 }}>
-        <div className="lang-panel-head">
-          <h3>$ gh lang-stats --user {USER}</h3>
-          <span className="meta">API unavailable</span>
-        </div>
-        <div style={{ color: 'var(--fg-4)', fontSize: 12, fontFamily: 'JetBrains Mono, monospace' }}>
+      <div className="p-5 min-h-[480px]">
+        <LangPanelHead meta="API unavailable">$ gh lang-stats --user {USER}</LangPanelHead>
+        <div className="text-fg-4 text-sm font-mono">
           // could not reach github.com — try again later
         </div>
       </div>
@@ -112,17 +127,15 @@ export default function LangStats() {
 
   if (!data) {
     return (
-      <div className="lang-panel" style={{ padding: 20 }}>
-        <div className="lang-panel-head">
-          <h3>$ gh lang-stats --user {USER}</h3>
-          <span className="meta">fetching…</span>
-        </div>
+      <div className="p-5 min-h-[480px]">
+        <LangPanelHead meta="fetching…">$ gh lang-stats --user {USER}</LangPanelHead>
         {[0, 1, 2, 3, 4].map(i => (
-          <div className="lang-row" key={i}>
-            <span className="lang-name" style={{ color: 'var(--fg-4)' }}>...</span>
-            <div className="lang-bar"><div className="lang-bar-fill" style={{ width: '0%' }} /></div>
-            <span className="lang-pct">--</span>
-          </div>
+          <LangRow key={i} name="...">
+            <div className="h-1.5 bg-bg-3 rounded-sm overflow-hidden relative">
+              <div className="lang-bar-fill h-full rounded-sm" style={{ width: '0%' }} />
+            </div>
+            <span className="text-fg-3 text-right text-xs">--</span>
+          </LangRow>
         ))}
       </div>
     );
@@ -133,26 +146,21 @@ export default function LangStats() {
   const scale = 92 / maxPct; // scale so longest bar is ~92% width
 
   return (
-    <div className="lang-panel" style={{ padding: 20, cursor: 'pointer' }}
-      onClick={() => setRunning(false)}>
-      <div className="lang-panel-head">
-        <h3>$ gh lang-stats --user {USER}</h3>
-        <span className="meta">recency-weighted · {stamp}</span>
-      </div>
+    <div className="p-5 min-h-[480px] cursor-pointer" onClick={() => setRunning(false)}>
+      <LangPanelHead meta={`recency-weighted · ${stamp}`}>$ gh lang-stats --user {USER}</LangPanelHead>
       {data.rows.map((l, i) => {
         const hue = LANG_HUES[l.name] ?? 200;
         return (
-          <div className="lang-row" key={l.name}>
-            <span className="lang-name">{l.name}</span>
-            <div className="lang-bar">
-              <div className="lang-bar-fill" style={{
+          <LangRow key={l.name} name={l.name}>
+            <div className="h-1.5 bg-bg-3 rounded-sm overflow-hidden relative">
+              <div className="lang-bar-fill h-full rounded-sm" style={{
                 width: running ? `${Math.min(100, l.pct * scale)}%` : '0%',
                 background: `oklch(0.75 0.15 ${hue})`,
                 transitionDelay: `${i * 70}ms`,
               }} />
             </div>
-            <span className="lang-pct">{l.pct.toFixed(1)}%</span>
-          </div>
+            <span className="text-fg-3 text-right text-xs">{l.pct.toFixed(1)}%</span>
+          </LangRow>
         );
       })}
     </div>

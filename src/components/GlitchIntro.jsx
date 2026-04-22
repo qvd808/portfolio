@@ -131,7 +131,9 @@ export default function GlitchIntro({ onDone }) {
           <div className={`glitch-word layer-bot ${isLightning ? 'glitch-intense' : ''}`} key={`d-${phase}`}>{word}</div>
         </>
       )}
-      <div className="splash-skip"><kbd>esc</kbd> to skip</div>
+      <div className="absolute bottom-[30px] left-1/2 -translate-x-1/2 font-mono text-[11px] text-[rgba(230,235,255,0.55)] z-10 tracking-[0.06em]">
+        <kbd className="border border-[rgba(230,235,255,0.3)] px-1.5 py-0.5 rounded-[3px] bg-[rgba(230,235,255,0.05)] mx-1">esc</kbd> to skip
+      </div>
     </div>
   );
 }

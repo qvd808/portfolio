@@ -6,6 +6,7 @@ import Skills from './components/Skills';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Tweaks, { useTweaks } from './components/Tweaks';
+import NotFound from './components/NotFound';
 import useIsMobile from './hooks/useIsMobile';
 import './index.css';
 
@@ -21,10 +22,10 @@ function Chrome({ theme, onToggleTheme }) {
           </div>
         </div>
         <nav className="chrome-right" style={{ display: 'flex' }}>
-          <a href="#about" className="nav-link"><span className="num">01</span>about</a>
-          <a href="#skills" className="nav-link"><span className="num">02</span>skills</a>
-          <a href="#projects" className="nav-link"><span className="num">03</span>projects</a>
-          <a href="#contact" className="nav-link"><span className="num">04</span>contact</a>
+          <a href="#about" className="nav-link">about</a>
+          <a href="#skills" className="nav-link">skills</a>
+          <a href="#projects" className="nav-link">projects</a>
+          <a href="#contact" className="nav-link">contact</a>
           <button className="theme-toggle" onClick={onToggleTheme}>
             {theme === 'dark' ? '◐ DARK' : '◑ CREAM'}
           </button>
@@ -50,6 +51,11 @@ function Footer() {
 const SHADOW_SELECTORS = '.hero-heading, .section-title, .contact-title';
 
 export default function App() {
+  // ── 404 easter egg ──────────────────────────────────────────────────────────
+  if (window.location.pathname === '/404') {
+    return <NotFound />;
+  }
+
   const [tweakState, setTweakState] = useTweaks();
   const [tweaksVisible, setTweaksVisible] = useState(false);
   const [introDone, setIntroDone] = useState(() => {
@@ -99,7 +105,7 @@ export default function App() {
         const clone = container.children[i];
         if (!clone) return;
         const rect = rects[i];
-        
+
         if (rect.width === 0 || rect.height === 0) {
           clone.style.display = 'none';
           return;
@@ -119,7 +125,7 @@ export default function App() {
       syncClones();
     };
     window.addEventListener('resize', onResize);
-    
+
     // Fallback sync for late-loading fonts/images
     const syncInterval = setInterval(syncClones, 500);
     // Initial sync

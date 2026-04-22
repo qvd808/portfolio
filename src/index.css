@@ -59,8 +59,13 @@ html {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -207,6 +212,8 @@ a {
   max-width: var(--maxw);
   margin: 0 auto;
   padding: calc(80px * var(--density)) 20px;
+  /* Isolate paint layers for smoother scroll */
+  contain: layout style;
 }
 
 .section-label {
@@ -1197,7 +1204,10 @@ body.spotlight-on .brick-layer {
    the inner wrapper handles the 3D perspective push. This separates the mask space from 
    the transform layout so zooming the shadow doesn't scale up the spotlight radius! */
 .shadow-mask-layer {
-  position: fixed; inset: 0; pointer-events: none; z-index: 2;
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
   mix-blend-mode: multiply;
   -webkit-mask-image: radial-gradient(circle 260px at var(--spot-x) var(--spot-y), black 0%, black 22%, transparent 82%);
   mask-image: radial-gradient(circle 260px at var(--spot-x) var(--spot-y), black 0%, black 22%, transparent 82%);
@@ -1210,7 +1220,8 @@ body.spotlight-on .brick-layer {
 }
 
 .shadow-transform-layer {
-  position: absolute; inset: 0;
+  position: absolute;
+  inset: 0;
   /* Converts the rich DOM clones into pitch-black blurred silhouettes */
   filter: brightness(0) blur(4px);
   /* 3D perspective projection — anchor at cursor, scale pushes nodes away natively */
@@ -1222,31 +1233,31 @@ body.spotlight-on .brick-layer {
 /* Warm flashlight bloom: bright cream center → amber mid → invisible.  */
 body.spotlight-on::after {
   content: "";
-  position: fixed; inset: 0;
+  position: fixed;
+  inset: 0;
   pointer-events: none;
   z-index: 2;
-  background: radial-gradient(
-    circle 100px at var(--spot-x) var(--spot-y),
-    oklch(0.94 0.06 75 / 0.42) 0%,
-    oklch(0.78 0.1  60 / 0.26) 30%,
-    oklch(0.60 0.08 50 / 0.12) 60%,
-    transparent 85%
-  );
+  background: radial-gradient(circle 100px at var(--spot-x) var(--spot-y),
+      oklch(0.94 0.06 75 / 0.42) 0%,
+      oklch(0.78 0.1 60 / 0.26) 30%,
+      oklch(0.60 0.08 50 / 0.12) 60%,
+      transparent 85%);
   mix-blend-mode: screen;
 }
+
 [data-theme="light"] body.spotlight-on::after {
   mix-blend-mode: overlay;
-  background: radial-gradient(
-    circle 100px at var(--spot-x) var(--spot-y),
-    oklch(0.96 0.05 70 / 0.5) 0%,
-    oklch(0.80 0.08 60 / 0.3) 40%,
-    transparent 80%
-  );
+  background: radial-gradient(circle 100px at var(--spot-x) var(--spot-y),
+      oklch(0.96 0.05 70 / 0.5) 0%,
+      oklch(0.80 0.08 60 / 0.3) 40%,
+      transparent 80%);
 }
 
 /* Disable spotlight bloom on touch/mobile devices */
 @media (pointer: coarse) {
-  body.spotlight-on::after { display: none; }
+  body.spotlight-on::after {
+    display: none;
+  }
 }
 
 /* ===== Glitch intro splash ===== */
@@ -1813,4 +1824,14 @@ body.spotlight-on::after {
   width: 8px;
   height: 8px;
   border-radius: 50%;
+}
+
+/* ===== Performance: promote animated project cards to own layer ===== */
+.project {
+  will-change: transform;
+}
+
+.project:hover {
+  will-change: auto;
+  /* release hint once in hover state */
 }

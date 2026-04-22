@@ -8,14 +8,14 @@ const CATEGORIES = [
     blurb: "What I actually write.",
     accent: 130,
     items: [
-      { name: "C",          detail: "My current obsession. Where I'm trying to get really good." },
-      { name: "Rust",       detail: "For when safety matters and I want to feel smart about it" },
-      { name: "Python",     detail: "Daily driver for most everyday things" },
+      { name: "C", detail: "My current obsession. Where I'm trying to get really good." },
+      { name: "Rust", detail: "For when safety matters and I want to feel smart about it" },
+      { name: "Python", detail: "Daily driver for most everyday things" },
       { name: "TypeScript", detail: "Web + mobile work, React-adjacent" },
       { name: "JavaScript", detail: "Comes with the TS territory" },
-      { name: "C++",        detail: "Used it for coursework and graphics stuff" },
-      { name: "Java",       detail: "I know it exists and I can use it" },
-      { name: "Zig",        detail: "Currently learning. Feels right." },
+      { name: "C++", detail: "Used it for coursework and graphics stuff" },
+      { name: "Java", detail: "I know it exists and I can use it" },
+      { name: "Zig", detail: "Currently learning. Feels right." },
     ],
   },
   {
@@ -25,13 +25,13 @@ const CATEGORIES = [
     blurb: "The toolbox.",
     accent: 210,
     items: [
-      { name: "React",        detail: "Most of my web work lives here" },
+      { name: "React", detail: "Most of my web work lives here" },
       { name: "React Native", detail: "Mobile when I need to go cross-platform" },
-      { name: "Tailwind",     detail: "I gave up writing CSS from scratch, it's fine" },
-      { name: "Vite",         detail: "Fast build tool, love it" },
-      { name: "Framer Motion",detail: "Animations on my old portfolio were all this" },
-      { name: "PostgreSQL",   detail: "My preferred boring database" },
-      { name: "Node.js",      detail: "When the backend needs to be JS-shaped" },
+      { name: "Tailwind", detail: "I gave up writing CSS from scratch, it's fine" },
+      { name: "Vite", detail: "Fast build tool, love it" },
+      { name: "Framer Motion", detail: "Animations on my old portfolio were all this" },
+      { name: "PostgreSQL", detail: "My preferred boring database" },
+      { name: "Node.js", detail: "When the backend needs to be JS-shaped" },
     ],
   },
   {
@@ -41,12 +41,12 @@ const CATEGORIES = [
     blurb: "Where I spend my days.",
     accent: 30,
     items: [
-      { name: "Neovim",   detail: "My coding sanctuary. Obviously." },
-      { name: "Linux",    detail: "Arch, btw" },
-      { name: "Git",      detail: "Rebase and force-push-with-lease camp" },
-      { name: "Docker",   detail: "For when reproducibility matters" },
-      { name: "Bash",     detail: "Writing small shell scripts is a joy" },
-      { name: "Tmux",     detail: "Terminal multiplexer, can't live without it" },
+      { name: "Neovim", detail: "My coding sanctuary. Obviously." },
+      { name: "Linux", detail: "Arch, btw" },
+      { name: "Git", detail: "Rebase and force-push-with-lease camp" },
+      { name: "Docker", detail: "For when reproducibility matters" },
+      { name: "Bash", detail: "Writing small shell scripts is a joy" },
+      { name: "Tmux", detail: "Terminal multiplexer, can't live without it" },
       { name: "GH Actions", detail: "CI/CD for pretty much all my projects" },
     ],
   },
@@ -57,12 +57,12 @@ const CATEGORIES = [
     blurb: "The stuff I actually get excited about.",
     accent: 290,
     items: [
-      { name: "Low-level",    detail: "Current focus. Everything fun happens close to the metal." },
-      { name: "FPGAs",        detail: "Building a CPU on an Altera FPGA — open source when it runs" },
-      { name: "Hardware",     detail: "Custom watch project in the backlog — PCB, firmware, enclosure" },
-      { name: "Compilers",    detail: "LLVM coursework got me hooked on the idea of language design" },
-      { name: "Operating Sys",detail: "Would love to poke at a hobby kernel one day" },
-      { name: "Debugging",    detail: "The most underrated skill. I enjoy it more than I should." },
+      { name: "Low-level", detail: "Current focus. Everything fun happens close to the metal." },
+      { name: "FPGAs", detail: "Building a CPU on an Altera FPGA — open source when it runs" },
+      { name: "Hardware", detail: "Custom watch project in the backlog — PCB, firmware, enclosure" },
+      { name: "Compilers", detail: "LLVM coursework got me hooked on the idea of language design" },
+      { name: "Operating Sys", detail: "Would love to poke at a hobby kernel one day" },
+      { name: "Debugging", detail: "The most underrated skill. I enjoy it more than I should." },
     ],
   },
 ];
@@ -128,7 +128,7 @@ function Constellation({ category, selected, setSelected }) {
   }, [nodes]);
 
   const accentColor = `oklch(0.78 0.16 ${accent})`;
-  const accentSoft  = `oklch(0.78 0.16 ${accent} / 0.2)`;
+  const accentSoft = `oklch(0.78 0.16 ${accent} / 0.2)`;
 
   return (
     <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: 'block', maxHeight: 440 }}>
@@ -172,21 +172,21 @@ function Constellation({ category, selected, setSelected }) {
         const r = isSel ? 32 : 28;
         return (
           <g key={n.i}
-             data-node={n.i}
-             onMouseEnter={() => setSelected(n.i)}
-             onClick={() => setSelected(n.i)}
-             style={{ cursor: 'pointer' }}>
+            data-node={n.i}
+            onMouseEnter={() => setSelected(n.i)}
+            onClick={() => setSelected(n.i)}
+            style={{ cursor: 'pointer' }}>
             <circle cx={n.bx} cy={n.by} r={r + 4} fill={accentColor} opacity={isSel ? 0.15 : 0} />
             <circle cx={n.bx} cy={n.by} r={r}
-                    fill={isSel ? accentColor : "var(--bg-1)"}
-                    stroke={isSel ? accentColor : "var(--border-strong)"}
-                    strokeWidth="1.2" />
+              fill={isSel ? accentColor : "var(--bg-1)"}
+              stroke={isSel ? accentColor : "var(--border-strong)"}
+              strokeWidth="1.2" />
             <text x={n.bx} y={n.by + 3} textAnchor="middle"
-                  fill={isSel ? "oklch(0.14 0.01 250)" : "var(--fg-2)"}
-                  fontSize={n.name.length > 10 ? "9" : "10"}
-                  fontFamily="JetBrains Mono, monospace"
-                  fontWeight={isSel ? "600" : "400"}
-                  style={{ pointerEvents: 'none' }}>
+              fill={isSel ? "oklch(0.14 0.01 250)" : "var(--fg-2)"}
+              fontSize={n.name.length > 10 ? "9" : "10"}
+              fontFamily="JetBrains Mono, monospace"
+              fontWeight={isSel ? "600" : "400"}
+              style={{ pointerEvents: 'none' }}>
               {n.name}
             </text>
           </g>
@@ -197,17 +197,25 @@ function Constellation({ category, selected, setSelected }) {
 }
 
 const LANGS = [
-  { name: "Python",     pct: 28, hue: 130 },
+  { name: "Python", pct: 28, hue: 130 },
   { name: "TypeScript", pct: 21, hue: 210 },
-  { name: "Rust",       pct: 16, hue: 30 },
-  { name: "C",          pct: 13, hue: 260 },
-  { name: "C++",        pct: 8,  hue: 280 },
-  { name: "JavaScript", pct: 7,  hue: 60 },
-  { name: "CUDA",       pct: 4,  hue: 150 },
-  { name: "Shell",      pct: 3,  hue: 180 },
+  { name: "Rust", pct: 16, hue: 30 },
+  { name: "C", pct: 13, hue: 260 },
+  { name: "C++", pct: 8, hue: 280 },
+  { name: "JavaScript", pct: 7, hue: 60 },
+  { name: "CUDA", pct: 4, hue: 150 },
+  { name: "Shell", pct: 3, hue: 180 },
 ];
 
-function LangStats({ visible }) {
+function LangStats() {
+  // `running` starts false; flip to true after a short delay so bars
+  // animate from 0 → target every time the tab is clicked.
+  const [running, setRunning] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setRunning(true), 80);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <div className="lang-panel" style={{ padding: 20 }}>
       <div className="lang-panel-head">
@@ -219,9 +227,9 @@ function LangStats({ visible }) {
           <span className="lang-name">{l.name}</span>
           <div className="lang-bar">
             <div className="lang-bar-fill" style={{
-              width: visible ? `${l.pct * 3}%` : '0%',
+              width: running ? `${l.pct * 3}%` : '0%',
               background: `oklch(0.75 0.15 ${l.hue})`,
-              transitionDelay: `${i * 60}ms`,
+              transitionDelay: `${i * 70}ms`,
             }} />
           </div>
           <span className="lang-pct">{l.pct}%</span>
@@ -236,28 +244,34 @@ export default function Skills() {
   const [catIdx, setCatIdx] = useState(0);
   const [sel, setSel] = useState(0);
   const [view, setView] = useState('explore');
+  const [statsKey, setStatsKey] = useState(0);
 
   const cat = CATEGORIES[catIdx];
   const selectedItem = cat.items[sel] || cat.items[0];
 
   useEffect(() => { setSel(0); }, [catIdx]);
 
+  const handleViewSwitch = (next) => {
+    if (next === 'stats') setStatsKey(k => k + 1); // remount → bars reset to 0 and run
+    setView(next);
+  };
+
   return (
     <section className="section" id="skills" ref={ref}>
-      <div className="section-label">§ 02 — capabilities</div>
+      <div className="section-label">§ capabilities</div>
       <h2 className="section-title">
-        Pick a category. <em className="serif">Hover the nodes to see the short story behind each one.</em>
+        Pick a category. <em className="serif">Hover the nodes — I wrote one honest sentence about each one.</em>
       </h2>
       <p className="section-sub">
-        Interactive take on the skill-wheel from my old portfolio. Four categories, click to explore.
+        Click a node to lock it. Switch to gh stats to see my actual language breakdown.
       </p>
 
-      <div style={{display:'flex', gap:10, marginBottom:20, alignItems:'center'}}>
-        <div className="seg" style={{display:'inline-flex', width:'auto'}}>
-          <button className={view==='explore'?'active':''} onClick={()=>setView('explore')}
-            style={{padding:'8px 14px'}}>◐ explore</button>
-          <button className={view==='stats'?'active':''} onClick={()=>setView('stats')}
-            style={{padding:'8px 14px'}}>▁▃▅ gh stats</button>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 20, alignItems: 'center' }}>
+        <div className="seg" style={{ display: 'inline-flex', width: 'auto' }}>
+          <button className={view === 'explore' ? 'active' : ''} onClick={() => handleViewSwitch('explore')}
+            style={{ padding: '8px 14px' }}>◐ explore</button>
+          <button className={view === 'stats' ? 'active' : ''} onClick={() => handleViewSwitch('stats')}
+            style={{ padding: '8px 14px' }}>▁▃▅ gh stats</button>
         </div>
       </div>
 
@@ -282,30 +296,30 @@ export default function Skills() {
           <div className="cat-stage">
             <div className="cat-stage-head">
               <div>
-                <div className="mono" style={{fontSize:10, color:'var(--fg-4)', letterSpacing:'0.05em'}}>
+                <div className="mono" style={{ fontSize: 10, color: 'var(--fg-4)', letterSpacing: '0.05em' }}>
                   {cat.code.replace('§ ', '').toUpperCase()}
                 </div>
-                <div style={{fontSize:18, fontWeight:500, marginTop:2}}>{cat.title}</div>
+                <div style={{ fontSize: 18, fontWeight: 500, marginTop: 2 }}>{cat.title}</div>
               </div>
-              <div className="mono" style={{fontSize:10, color:'var(--fg-4)'}}>
+              <div className="mono" style={{ fontSize: 10, color: 'var(--fg-4)' }}>
                 hover · click to pin
               </div>
             </div>
 
-            <div style={{position:'relative'}}>
+            <div style={{ position: 'relative' }}>
               <Constellation category={cat} selected={sel} setSelected={setSel} />
             </div>
 
             <div className="cat-detail">
               <div className="cat-detail-name mono">
-                <span style={{color:`oklch(0.78 0.16 ${cat.accent})`}}>●</span> {selectedItem.name}
+                <span style={{ color: `oklch(0.78 0.16 ${cat.accent})` }}>●</span> {selectedItem.name}
               </div>
               <div className="cat-detail-blurb">{selectedItem.detail}</div>
             </div>
           </div>
         </div>
       ) : (
-        <LangStats visible={visible} />
+        <LangStats key={statsKey} />
       )}
     </section>
   );

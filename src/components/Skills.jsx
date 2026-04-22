@@ -280,8 +280,8 @@ export default function Skills() {
                 <div className="cat-title">Language Activity</div>
               </div>
               <p style={{ fontSize: 11, color: 'var(--fg-4)', padding: '12px', lineHeight: 1.6, fontFamily: 'JetBrains Mono, monospace' }}>
-                // live feed from github.com<br/>
-                // recency-weighted<br/>
+                // live feed from github.com<br />
+                // recency-weighted<br />
                 // updated daily
               </p>
               <div style={{ padding: '0 12px', fontSize: 10, color: 'var(--fg-4)', opacity: 0.6 }}>
@@ -296,4 +296,4 @@ export default function Skills() {
       </div>
     </section>
   );
-}
+}

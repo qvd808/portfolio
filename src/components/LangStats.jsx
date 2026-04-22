@@ -33,8 +33,16 @@ async function fetchLangStats() {
   results.forEach(res => {
     if (res.status !== 'fulfilled' || !res.value) return;
     const { langs, weight } = res.value;
+
+    const repoTotalBytes = Object.values(langs).reduce((a, b) => a + b, 0);
+    if (repoTotalBytes === 0) return;
+
     for (const [lang, bytes] of Object.entries(langs)) {
-      totals[lang] = (totals[lang] || 0) + bytes * weight;
+      // Calculate language share within THIS repo (0.0 to 1.0)
+      const share = bytes / repoTotalBytes;
+      // Total score is sum of (share * recency_weight) across all repos.
+      // This ensures a small TS project contributes as much as a giant C project.
+      totals[lang] = (totals[lang] || 0) + (share * weight);
     }
   });
 

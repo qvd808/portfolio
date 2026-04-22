@@ -1,27 +1,29 @@
 import { useState, useEffect } from 'react';
 
+const BASE = import.meta.env.BASE_URL;
+
 // Each dog gets its own caption that fits the "are you lost?" vibe
 const EASTER_EGGS = [
   {
-    src: '/portfolio/doggo_with_gun.png',
+    src: `${BASE}doggo_with_gun.png`,
     alt: 'dog with a gun',
     caption: 'One more step and we both find out what happens.',
     sub: 'are you sure you not lost or something?',
   },
   {
-    src: '/portfolio/stop_fighting_meme.jpg',
+    src: `${BASE}stop_fighting_meme.jpg`,
     alt: 'puppy being held up',
     caption: "I just got here and even I know this isn't a real page.",
     sub: 'go back. now.',
   },
   {
-    src: '/portfolio/dog_beware-3339263613.jpg',
+    src: `${BASE}dog_beware-3339263613.jpg`,
     alt: 'friendly dog',
     caption: 'Hi there, I am a friendly dog.',
     sub: `     ︵ \n૮(\`ᴥ ⁻ 𑁬\n   |    ⸝ 〵\n  じしˍ,  )୭`,
   },
   {
-    src: '/portfolio/crying_anime_girl.jpg',
+    src: `${BASE}crying_anime_girl.jpg`,
     alt: 'Anna Yanami crying',
     caption: "I'm lost, you're lost... we're all lost here.",
     sub: 'NOT FOUND. go back.',

@@ -147,7 +147,7 @@ function ProjectCard({ repo, badge, badgeStyle }) {
       <div className="project-head">
         <div className="project-title-wrap">
           <span className="project-repo">{repo.full_name}</span>
-          <span className="project-title">{repo.name}</span>
+          <h3 className="project-title">{repo.name}</h3>
         </div>
         {badge && (
           <span className="project-status" style={badgeStyle}>
@@ -205,7 +205,7 @@ function Panel({ label, title, meta, children }) {
           <div className="mono" style={{ fontSize: 10, color: 'var(--fg-4)', letterSpacing: '0.06em', marginBottom: 4 }}>
             {label}
           </div>
-          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg)' }}>{title}</div>
+          <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg)' }}>{title}</h3>
         </div>
         {meta && (
           <div className="mono" style={{ fontSize: 10, color: 'var(--fg-4)', whiteSpace: 'nowrap' }}>{meta}</div>

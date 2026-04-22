@@ -27,7 +27,7 @@ export default function About() {
             <div className="mono" style={{ fontSize: 10, color: 'var(--fg-4)', letterSpacing: '0.05em' }}>
               🎯 GOALS · 2026
             </div>
-            <div style={{ fontSize: 16, fontWeight: 500, marginTop: 6 }}>What I'm working toward</div>
+            <h3 style={{ fontSize: 16, fontWeight: 500, marginTop: 6 }}>What I'm working toward</h3>
           </div>
           <ul className="goals-list">
             <li>

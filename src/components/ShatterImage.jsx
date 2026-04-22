@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Delaunay } from 'd3-delaunay';
 
-export default function ShatterImage({ src, alt, style, className }) {
+export default function ShatterImage({ src, alt, style, className, fetchpriority }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function ShatterImage({ src, alt, style, className }) {
 
     const MOMENTUM_WINDOW_MS = 250;
     const SPEED_THRESHOLD = 1.5;
-    const N_SHARDS = 85;
+    const N_SHARDS = 50;
     const GAP_MULT = 2.0;
     const ROT_MULT = 1.0;
 
@@ -213,6 +213,10 @@ export default function ShatterImage({ src, alt, style, className }) {
       animFrame = requestAnimationFrame(render);
     }
 
+    // Cache rect to avoid layout thrashing on every mouse move
+    let cachedRect = null;
+    const updateRect = () => { if (canvas) cachedRect = canvas.getBoundingClientRect(); };
+
     const onMouseMove = (e) => {
       const now = Date.now();
       mouseHistory.push({ x: e.clientX, y: e.clientY, time: now });
@@ -229,10 +233,10 @@ export default function ShatterImage({ src, alt, style, className }) {
       const dy = newest.y - oldest.y;
       const speed = Math.sqrt(dx * dx + dy * dy) / dt;
 
-      const rect = canvas.getBoundingClientRect();
+      if (!cachedRect) updateRect();
       const overCanvas =
-        newest.x >= rect.left && newest.x <= rect.right &&
-        newest.y >= rect.top && newest.y <= rect.bottom;
+        newest.x >= cachedRect.left && newest.x <= cachedRect.right &&
+        newest.y >= cachedRect.top && newest.y <= cachedRect.bottom;
 
       if (overCanvas && speed > SPEED_THRESHOLD) {
         triggerShatter();
@@ -247,9 +251,14 @@ export default function ShatterImage({ src, alt, style, className }) {
     img.src = src;
 
     document.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('scroll', updateRect, { passive: true });
+    window.addEventListener('resize', updateRect);
+    updateRect();
 
     return () => {
       document.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('scroll', updateRect);
+      window.removeEventListener('resize', updateRect);
       if (animFrame) cancelAnimationFrame(animFrame);
       if (repairTimer) clearTimeout(repairTimer);
     };

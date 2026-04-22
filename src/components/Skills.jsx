@@ -84,18 +84,7 @@ function Constellation({ category, selected, setSelected }) {
   const W = 480, H = 420;
   const cx = W / 2, cy = H / 2;
   const bigR = 54;
-  const [tick, setTick] = useState(0);
-
-  useEffect(() => {
-    let raf;
-    const start = performance.now();
-    const loop = () => {
-      setTick((performance.now() - start) / 1000);
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+  const svgRef = useRef(null);
 
   const nodes = useMemo(() => {
     const n = items.length;
@@ -109,11 +98,40 @@ function Constellation({ category, selected, setSelected }) {
     });
   }, [category.id]);
 
+  // Animate wobble via direct DOM manipulation — zero React re-renders
+  useEffect(() => {
+    let raf;
+    const start = performance.now();
+    const loop = () => {
+      const t = (performance.now() - start) / 1000;
+      const svg = svgRef.current;
+      if (!svg) { raf = requestAnimationFrame(loop); return; }
+
+      nodes.forEach(n => {
+        const wx = Math.cos(n.phase + t * 0.7) * 5;
+        const wy = Math.sin(n.phase + t * 0.7) * 5;
+        const x = n.bx + wx, y = n.by + wy;
+
+        // Update line endpoint
+        const line = svg.querySelector(`[data-line="${n.i}"]`);
+        if (line) { line.setAttribute('x2', x); line.setAttribute('y2', y); }
+
+        // Update node group position
+        const group = svg.querySelector(`[data-node="${n.i}"]`);
+        if (group) group.setAttribute('transform', `translate(${wx},${wy})`);
+      });
+
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [nodes]);
+
   const accentColor = `oklch(0.78 0.16 ${accent})`;
   const accentSoft  = `oklch(0.78 0.16 ${accent} / 0.2)`;
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: 'block', maxHeight: 440 }}>
+    <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: 'block', maxHeight: 440 }}>
       <defs>
         <radialGradient id={`glow-${category.id}`} cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor={accentColor} stopOpacity="0.25" />
@@ -124,15 +142,13 @@ function Constellation({ category, selected, setSelected }) {
       <circle cx={cx} cy={cy} r={170} fill="none" stroke="var(--border)" strokeDasharray="2 6" strokeWidth="1" />
 
       {nodes.map(n => {
-        const wx = Math.cos(n.phase + tick * 0.7) * 5;
-        const wy = Math.sin(n.phase + tick * 0.7) * 5;
-        const x = n.bx + wx, y = n.by + wy;
         const lx = cx + Math.cos(n.angle) * bigR;
         const ly = cy + Math.sin(n.angle) * bigR;
         return (
           <line
             key={`l-${n.i}`}
-            x1={lx} y1={ly} x2={x} y2={y}
+            data-line={n.i}
+            x1={lx} y1={ly} x2={n.bx} y2={n.by}
             stroke={selected === n.i ? accentColor : "var(--border-strong)"}
             strokeWidth={selected === n.i ? 1.4 : 0.8}
             opacity={selected === n.i ? 1 : 0.5}
@@ -152,22 +168,20 @@ function Constellation({ category, selected, setSelected }) {
       </text>
 
       {nodes.map(n => {
-        const wx = Math.cos(n.phase + tick * 0.7) * 5;
-        const wy = Math.sin(n.phase + tick * 0.7) * 5;
-        const x = n.bx + wx, y = n.by + wy;
         const isSel = selected === n.i;
         const r = isSel ? 32 : 28;
         return (
           <g key={n.i}
+             data-node={n.i}
              onMouseEnter={() => setSelected(n.i)}
              onClick={() => setSelected(n.i)}
              style={{ cursor: 'pointer' }}>
-            <circle cx={x} cy={y} r={r + 4} fill={accentColor} opacity={isSel ? 0.15 : 0} />
-            <circle cx={x} cy={y} r={r}
+            <circle cx={n.bx} cy={n.by} r={r + 4} fill={accentColor} opacity={isSel ? 0.15 : 0} />
+            <circle cx={n.bx} cy={n.by} r={r}
                     fill={isSel ? accentColor : "var(--bg-1)"}
                     stroke={isSel ? accentColor : "var(--border-strong)"}
                     strokeWidth="1.2" />
-            <text x={x} y={y + 3} textAnchor="middle"
+            <text x={n.bx} y={n.by + 3} textAnchor="middle"
                   fill={isSel ? "oklch(0.14 0.01 250)" : "var(--fg-2)"}
                   fontSize={n.name.length > 10 ? "9" : "10"}
                   fontFamily="JetBrains Mono, monospace"

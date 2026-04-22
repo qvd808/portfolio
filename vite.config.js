@@ -8,9 +8,13 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-d3': ['d3-delaunay'],
+        manualChunks(id) {
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) {
+            return 'vendor-react';
+          }
+          if (id.includes('d3-delaunay') || id.includes('delaunator')) {
+            return 'vendor-d3';
+          }
         },
       },
     },

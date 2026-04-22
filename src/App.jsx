@@ -104,15 +104,16 @@ export default function App() {
 
     // Keep clones aligned on scroll and structural changes
     window.addEventListener('scroll', syncClones, { passive: true });
-    window.addEventListener('resize', () => {
+    const onResize = () => {
       if (container) container.innerHTML = ''; // Force full rebuild
       syncClones();
-    });
+    };
+    window.addEventListener('resize', onResize);
     
     // Fallback sync for late-loading fonts/images
     const syncInterval = setInterval(syncClones, 500);
     // Initial sync
-    setTimeout(syncClones, 50);
+    syncClones();
 
     let raf;
     let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
@@ -135,7 +136,7 @@ export default function App() {
     return () => {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('scroll', syncClones);
-      window.removeEventListener('resize', syncClones); // Note: anonymous function leak here but it's minor, fixing it cleanly.
+      window.removeEventListener('resize', onResize);
       clearInterval(syncInterval);
       cancelAnimationFrame(raf);
     };

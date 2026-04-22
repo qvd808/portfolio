@@ -182,10 +182,6 @@ a {
   background: var(--bg-2);
 }
 
-.nav-link .num {
-  color: var(--fg-4);
-  margin-right: 6px;
-}
 
 .theme-toggle {
   font-family: 'JetBrains Mono', monospace;
@@ -577,9 +573,6 @@ a {
   margin-bottom: 8px;
 }
 
-.trait-head .idx {
-  color: var(--accent);
-}
 
 .trait-title {
   font-size: 15px;

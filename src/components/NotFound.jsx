@@ -1,24 +1,30 @@
 import { useState, useEffect } from 'react';
 
 // Each dog gets its own caption that fits the "are you lost?" vibe
-const DOGS = [
+const EASTER_EGGS = [
   {
-    src: '/404-dog-gun.png',
-    alt: 'threatening dog with a gun',
-    caption: 'Wrong turn. I suggest you go back before I make this worse.',
-    sub: 'and I will.',
+    src: '/portfolio/doggo_with_gun.png',
+    alt: 'dog with a gun',
+    caption: 'One more step and we both find out what happens.',
+    sub: 'are you sure you not lost or something?',
   },
   {
-    src: '/404-dog-baby.jpg',
-    alt: 'newborn puppy with arms out',
-    caption: "I'm literally 3 days old and I know this page doesn't exist.",
-    sub: "what's your excuse?",
+    src: '/portfolio/stop_fighting_meme.jpg',
+    alt: 'puppy being held up',
+    caption: "I just got here and even I know this isn't a real page.",
+    sub: 'go back. now.',
   },
   {
-    src: '/404-dog-beware.jpg',
-    alt: 'fluffy dog behind beware of dog sign',
-    caption: "Maybe I'll bite, maybe I won't. What I do know: you're lost.",
-    sub: 'are you sure you\'re not lost?',
+    src: '/portfolio/dog_beware-3339263613.jpg',
+    alt: 'friendly dog',
+    caption: 'Hi there, I am a friendly dog.',
+    sub: `     ︵ \n૮(\`ᴥ ⁻ 𑁬\n   |    ⸝ 〵\n  じしˍ,  )୭`,
+  },
+  {
+    src: '/portfolio/crying_anime_girl.jpg',
+    alt: 'Anna Yanami crying',
+    caption: "I'm lost, you're lost... we're all lost here.",
+    sub: 'NOT FOUND. go back.',
   },
 ];
 
@@ -45,7 +51,7 @@ function Glitch({ children }) {
 
 export default function NotFound() {
   // Pick a random dog once per render (stable across re-renders via useState init)
-  const [dog] = useState(() => DOGS[Math.floor(Math.random() * DOGS.length)]);
+  const [egg] = useState(() => EASTER_EGGS[Math.floor(Math.random() * EASTER_EGGS.length)]);
   const [imgLoaded, setImgLoaded] = useState(false);
 
   // Minimal chrome — no need for full nav on 404
@@ -79,7 +85,7 @@ export default function NotFound() {
         color: 'var(--fg)',
         marginBottom: 8,
       }}>
-        <Glitch>404</Glitch>
+        <Glitch>NOT FOUND</Glitch>
       </div>
 
       {/* Error label */}
@@ -113,8 +119,8 @@ export default function NotFound() {
           filter: 'blur(8px)',
         }} />
         <img
-          src={dog.src}
-          alt={dog.alt}
+          src={egg.src}
+          alt={egg.alt}
           onLoad={() => setImgLoaded(true)}
           style={{
             position: 'relative',
@@ -131,24 +137,46 @@ export default function NotFound() {
         />
       </div>
 
-      {/* Caption */}
-      <p style={{
-        fontSize: 15,
-        color: 'var(--fg-2)',
-        marginBottom: 4,
-        maxWidth: 360,
-        lineHeight: 1.5,
-      }}>
-        {dog.caption}
-      </p>
-      <p style={{
-        fontSize: 12,
-        color: 'var(--fg-4)',
+      <div style={{
+        backgroundColor: 'var(--bg-1)',
+        border: '1px solid var(--border)',
+        borderRadius: 8,
+        padding: '16px 24px',
         marginBottom: 40,
-        fontStyle: 'italic',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        display: 'inline-flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 8,
       }}>
-        — {dog.sub}
-      </p>
+        <p style={{
+          fontSize: 14,
+          color: 'var(--fg-2)',
+          maxWidth: 320,
+          lineHeight: 1.5,
+          margin: 0,
+        }}>
+          {egg.caption}
+        </p>
+        <div className="emoji-wrap" style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginTop: 8,
+        }}>
+          <div className="emojis" style={{
+            fontFamily: "'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'JetBrains Mono', monospace",
+            fontSize: 'clamp(14px, 3.5vw, 20px)',
+            textAlign: 'left',
+            whiteSpace: 'pre',
+            lineHeight: '1.4',
+            color: 'var(--accent)',
+            letterSpacing: '0',
+          }}>
+            {egg.sub}
+          </div>
+        </div>
+      </div>
 
       {/* Go back */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -171,7 +199,7 @@ export default function NotFound() {
           onMouseEnter={e => e.currentTarget.style.filter = 'brightness(1.15)'}
           onMouseLeave={e => e.currentTarget.style.filter = ''}
         >
-          ← go back home
+          ← NOT FOUND go back
         </a>
         <button
           onClick={() => {
@@ -195,7 +223,7 @@ export default function NotFound() {
           onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-3)'}
           onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-2)'}
         >
-          ↻ different dog
+          ↻ different one
         </button>
       </div>
 

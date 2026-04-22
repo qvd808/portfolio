@@ -162,10 +162,6 @@ function Constellation({ category, selected, setSelected }) {
         fill="var(--fg)" fontSize="11" fontFamily="JetBrains Mono, monospace" fontWeight="600">
         {category.title.split(' ')[0].toUpperCase()}
       </text>
-      <text x={cx} y={cy + 10} textAnchor="middle"
-        fill="var(--fg-3)" fontSize="9" fontFamily="JetBrains Mono, monospace">
-        {items.length} items
-      </text>
 
       {nodes.map(n => {
         const isSel = selected === n.i;
@@ -212,12 +208,14 @@ function LangStats() {
   // animate from 0 → target every time the tab is clicked.
   const [running, setRunning] = useState(false);
   useEffect(() => {
-    const t = setTimeout(() => setRunning(true), 80);
-    return () => clearTimeout(t);
-  }, []);
+    if (!running) {
+      const t = setTimeout(() => setRunning(true), 80);
+      return () => clearTimeout(t);
+    }
+  }, [running]);
 
   return (
-    <div className="lang-panel" style={{ padding: 20 }}>
+    <div className="lang-panel" style={{ padding: 20, cursor: 'pointer' }} onClick={() => setRunning(false)}>
       <div className="lang-panel-head">
         <h3>$ gh lang-stats --user qvd808</h3>
         <span className="meta">from public repos · 2026-04-21</span>
@@ -287,7 +285,6 @@ export default function Skills() {
               >
                 <div className="cat-code">{c.code}</div>
                 <div className="cat-title">{c.title}</div>
-                <div className="cat-count">{c.items.length} items</div>
                 <div className="cat-arrow">{catIdx === i ? '▶' : ' '}</div>
               </button>
             ))}

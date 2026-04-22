@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import Atmosphere from './components/Atmosphere';
 import GlitchIntro from './components/GlitchIntro';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -47,12 +48,8 @@ function Footer() {
   );
 }
 
-// Elements whose text will cast shadows on the brick wall
-const SHADOW_SELECTORS = '.hero-heading, .section-title, .contact-title';
-
 export default function App() {
   // ── 404 easter egg ──────────────────────────────────────────────────────────
-  // Check if pathname (ignoring trailing slash) ends with /404
   if (window.location.pathname.replace(/\/$/, '').endsWith('/404')) {
     return <NotFound />;
   }
@@ -62,111 +59,7 @@ export default function App() {
   const [introDone, setIntroDone] = useState(() => {
     try { return sessionStorage.getItem('introSeen') === '1'; } catch { return false; }
   });
-  const shadowContainerRef = useRef(null);
   const isMobile = useIsMobile();
-
-  useEffect(() => {
-    const body = document.body;
-
-    // Skip entire flashlight system on mobile — no mouse, no GPU budget
-    if (isMobile) return;
-
-    body.classList.add('spotlight-on');
-
-    const container = shadowContainerRef.current;
-
-    let raf;
-    let syncQueued = false;
-
-    const syncClones = () => {
-      if (!container || document.visibilityState === 'hidden') return;
-      syncQueued = false; // Reset queue flag
-
-      const targets = Array.from(document.querySelectorAll(SHADOW_SELECTORS));
-      if (!targets.length) return;
-
-      // Build clones if missing
-      if (container.children.length !== targets.length) {
-        container.innerHTML = '';
-        targets.forEach(el => {
-          const clone = el.cloneNode(true);
-          clone.style.position = 'fixed';
-          clone.style.margin = '0';
-          clone.removeAttribute('id');
-          clone.style.pointerEvents = 'none';
-          clone.setAttribute('aria-hidden', 'true');
-          clone.style.boxSizing = 'border-box';
-          clone.style.webkitTextStroke = '1.5px black';
-          clone.style.color = 'black';
-          container.appendChild(clone);
-        });
-      }
-
-      // Batch DOM Reads
-      const rects = targets.map(el => el.getBoundingClientRect());
-
-      // Batch DOM Writes
-      targets.forEach((el, i) => {
-        const clone = container.children[i];
-        if (!clone) return;
-        const rect = rects[i];
-
-        if (rect.width === 0 || rect.height === 0) {
-          clone.style.display = 'none';
-          return;
-        }
-        clone.style.display = 'block';
-        clone.style.left = rect.left + 'px';
-        clone.style.top = rect.top + 'px';
-        clone.style.width = rect.width + 'px';
-        clone.style.height = rect.height + 'px';
-      });
-    };
-
-    const queueSync = () => {
-      if (!syncQueued) {
-        syncQueued = true;
-        requestAnimationFrame(syncClones);
-      }
-    };
-
-    // Keep clones aligned on scroll and structural changes
-    window.addEventListener('scroll', queueSync, { passive: true });
-    const onResize = () => {
-      if (container) container.innerHTML = ''; // Force full rebuild
-      queueSync();
-    };
-    window.addEventListener('resize', onResize);
-
-    // Throttled fallback sync for late-loading fonts/images
-    const syncInterval = setInterval(queueSync, 1000);
-    // Initial sync
-    queueSync();
-
-    let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
-    let cx = tx, cy = ty;
-
-    const onMove = (e) => { tx = e.clientX; ty = e.clientY; };
-
-    const loop = () => {
-      cx += (tx - cx) * 0.18;
-      cy += (ty - cy) * 0.18;
-      body.style.setProperty('--spot-x', cx + 'px');
-      body.style.setProperty('--spot-y', cy + 'px');
-
-      raf = requestAnimationFrame(loop);
-    };
-
-    window.addEventListener('mousemove', onMove);
-    raf = requestAnimationFrame(loop);
-    return () => {
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('scroll', queueSync);
-      window.removeEventListener('resize', onResize);
-      clearInterval(syncInterval);
-      cancelAnimationFrame(raf);
-    };
-  }, [isMobile]);
 
   useEffect(() => {
     const onMsg = (e) => {
@@ -191,12 +84,9 @@ export default function App() {
           try { sessionStorage.setItem('introSeen', '1'); } catch { }
         }} />
       )}
-      {!isMobile && <div className="brick-layer" />}
-      {!isMobile && (
-        <div className="shadow-mask-layer">
-          <div ref={shadowContainerRef} className="shadow-transform-layer" />
-        </div>
-      )}
+
+      {!isMobile && <Atmosphere />}
+
       <Chrome theme={tweakState.theme} onToggleTheme={toggleTheme} />
       <main style={{
         opacity: introDone ? 1 : 0,
@@ -219,4 +109,4 @@ export default function App() {
       />
     </>
   );
-}
+}

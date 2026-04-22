@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
+import LangStats from './LangStats';
 
 const CATEGORIES = [
   {
@@ -192,51 +193,6 @@ function Constellation({ category, selected, setSelected }) {
   );
 }
 
-const LANGS = [
-  { name: "Python", pct: 28, hue: 130 },
-  { name: "TypeScript", pct: 21, hue: 210 },
-  { name: "Rust", pct: 16, hue: 30 },
-  { name: "C", pct: 13, hue: 260 },
-  { name: "C++", pct: 8, hue: 280 },
-  { name: "JavaScript", pct: 7, hue: 60 },
-  { name: "CUDA", pct: 4, hue: 150 },
-  { name: "Shell", pct: 3, hue: 180 },
-];
-
-function LangStats() {
-  // `running` starts false; flip to true after a short delay so bars
-  // animate from 0 → target every time the tab is clicked.
-  const [running, setRunning] = useState(false);
-  useEffect(() => {
-    if (!running) {
-      const t = setTimeout(() => setRunning(true), 80);
-      return () => clearTimeout(t);
-    }
-  }, [running]);
-
-  return (
-    <div className="lang-panel" style={{ padding: 20, cursor: 'pointer' }} onClick={() => setRunning(false)}>
-      <div className="lang-panel-head">
-        <h3>$ gh lang-stats --user qvd808</h3>
-        <span className="meta">from public repos · 2026-04-21</span>
-      </div>
-      {LANGS.map((l, i) => (
-        <div className="lang-row" key={l.name}>
-          <span className="lang-name">{l.name}</span>
-          <div className="lang-bar">
-            <div className="lang-bar-fill" style={{
-              width: running ? `${l.pct * 3}%` : '0%',
-              background: `oklch(0.75 0.15 ${l.hue})`,
-              transitionDelay: `${i * 70}ms`,
-            }} />
-          </div>
-          <span className="lang-pct">{l.pct}%</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default function Skills() {
   const [ref, visible] = useRevealSkills();
   const [catIdx, setCatIdx] = useState(0);
@@ -273,51 +229,71 @@ export default function Skills() {
         </div>
       </div>
 
-      {view === 'explore' ? (
-        <div className="skills-explorer">
-          <div className="cat-list">
-            {CATEGORIES.map((c, i) => (
-              <button
-                key={c.id}
-                className={`cat-card ${catIdx === i ? 'active' : ''}`}
-                onClick={() => setCatIdx(i)}
-                style={{ '--cat-hue': c.accent }}
-              >
-                <div className="cat-code">{c.code}</div>
-                <div className="cat-title">{c.title}</div>
-                <div className="cat-arrow">{catIdx === i ? '▶' : ' '}</div>
-              </button>
-            ))}
-          </div>
+      <div className="skills-explorer">
+        {view === 'explore' ? (
+          <>
+            <div className="cat-list">
+              {CATEGORIES.map((c, i) => (
+                <button
+                  key={c.id}
+                  className={`cat-card ${catIdx === i ? 'active' : ''}`}
+                  onClick={() => setCatIdx(i)}
+                  style={{ '--cat-hue': c.accent }}
+                >
+                  <div className="cat-code">{c.code}</div>
+                  <div className="cat-title">{c.title}</div>
+                  <div className="cat-arrow">{catIdx === i ? '▶' : ' '}</div>
+                </button>
+              ))}
+            </div>
 
-          <div className="cat-stage">
-            <div className="cat-stage-head">
-              <div>
-                <div className="mono" style={{ fontSize: 10, color: 'var(--fg-4)', letterSpacing: '0.05em' }}>
-                  {cat.code.replace('§ ', '').toUpperCase()}
+            <div className="cat-stage">
+              <div className="cat-stage-head">
+                <div>
+                  <div className="mono" style={{ fontSize: 10, color: 'var(--fg-4)', letterSpacing: '0.05em' }}>
+                    {cat.code.replace('§ ', '').toUpperCase()}
+                  </div>
+                  <div style={{ fontSize: 18, fontWeight: 500, marginTop: 2 }}>{cat.title}</div>
                 </div>
-                <div style={{ fontSize: 18, fontWeight: 500, marginTop: 2 }}>{cat.title}</div>
+                <div className="mono" style={{ fontSize: 10, color: 'var(--fg-4)' }}>
+                  hover · click to pin
+                </div>
               </div>
-              <div className="mono" style={{ fontSize: 10, color: 'var(--fg-4)' }}>
-                hover · click to pin
-              </div>
-            </div>
 
-            <div style={{ position: 'relative' }}>
-              <Constellation category={cat} selected={sel} setSelected={setSel} />
-            </div>
-
-            <div className="cat-detail">
-              <div className="cat-detail-name mono">
-                <span style={{ color: `oklch(0.78 0.16 ${cat.accent})` }}>●</span> {selectedItem.name}
+              <div style={{ position: 'relative' }}>
+                <Constellation category={cat} selected={sel} setSelected={setSel} />
               </div>
-              <div className="cat-detail-blurb">{selectedItem.detail}</div>
+
+              <div className="cat-detail">
+                <div className="cat-detail-name mono">
+                  <span style={{ color: `oklch(0.78 0.16 ${cat.accent})` }}>●</span> {selectedItem.name}
+                </div>
+                <div className="cat-detail-blurb">{selectedItem.detail}</div>
+              </div>
             </div>
-          </div>
-        </div>
-      ) : (
-        <LangStats key={statsKey} />
-      )}
+          </>
+        ) : (
+          <>
+            <div className="cat-list">
+              <div className="cat-card active" style={{ cursor: 'default', '--cat-hue': '200' }}>
+                <div className="cat-code">§ telemetry</div>
+                <div className="cat-title">Language Activity</div>
+              </div>
+              <p style={{ fontSize: 11, color: 'var(--fg-4)', padding: '12px', lineHeight: 1.6, fontFamily: 'JetBrains Mono, monospace' }}>
+                // live feed from github.com<br/>
+                // recency-weighted<br/>
+                // updated daily
+              </p>
+              <div style={{ padding: '0 12px', fontSize: 10, color: 'var(--fg-4)', opacity: 0.6 }}>
+                Newer commits weigh more heavily on the results than legacy code.
+              </div>
+            </div>
+            <div className="cat-stage" style={{ padding: 0 }}>
+              <LangStats key={statsKey} />
+            </div>
+          </>
+        )}
+      </div>
     </section>
   );
-}
+}

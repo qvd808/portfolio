@@ -85,6 +85,74 @@ function IntroLightning({ active }) {
   );
 }
 
+function GlitchBlocks({ active }) {
+  const canvasRef = useRef(null);
+  const rafRef = useRef(null);
+
+  useEffect(() => {
+    if (!active) {
+      const canvas = canvasRef.current;
+      if (canvas) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+      cancelAnimationFrame(rafRef.current);
+      return;
+    }
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    let frame = 0;
+    const tick = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const w = canvas.width;
+      const h = canvas.height;
+
+      const numBlocks = 8 + Math.floor(Math.random() * 10);
+      for (let i = 0; i < numBlocks; i++) {
+        const bh = 2 + Math.random() * 18;
+        const by = Math.random() * h;
+        const bx = (Math.random() - 0.5) * 60;
+        const bw = w * (0.3 + Math.random() * 0.6);
+        const bLeft = Math.random() * (w - bw);
+        const channel = Math.floor(Math.random() * 3);
+        const colors = [
+          `rgba(255, 0, 80, ${0.15 + Math.random() * 0.3})`,
+          `rgba(0, 255, 180, ${0.15 + Math.random() * 0.3})`,
+          `rgba(0, 100, 255, ${0.15 + Math.random() * 0.3})`,
+        ];
+        ctx.fillStyle = colors[channel];
+        ctx.fillRect(bLeft + bx, by, bw, bh);
+      }
+
+      if (frame % 3 === 0) {
+        const sy = Math.random() * h;
+        ctx.fillStyle = `rgba(255,255,255,${0.03 + Math.random() * 0.04})`;
+        ctx.fillRect(0, sy, w, 1 + Math.random() * 2);
+      }
+
+      frame++;
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [active]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={800}
+      height={300}
+      style={{
+        position: 'absolute',
+        top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%)',
+        pointerEvents: 'none',
+        mixBlendMode: 'screen',
+        zIndex: 3,
+      }}
+    />
+  );
+}
+
 // Shortened intro splash (~1.2s). Esc / Enter / click to skip.
 // Calls onDone when the fade-out finishes so the parent can unmount it.
 export default function GlitchIntro({ onDone }) {
@@ -124,6 +192,7 @@ export default function GlitchIntro({ onDone }) {
     <div className={`glitch-splash ${fading ? 'fading' : ''}`} onClick={finish}>
       <div className="lightning-flash" style={{ opacity: isLightning ? 1 : 0 }} />
       <IntroLightning active={isLightning} key={lk} />
+      <GlitchBlocks active={isLightning} />
       {phase !== 'outro' && (
         <>
           <div className={`glitch-word layer-base ${isLightning ? 'glitch-intense' : ''}`} key={`b-${phase}`}>{word}</div>

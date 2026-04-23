@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Delaunay } from 'd3-delaunay';
 
-export default function ShatterImage({ src, alt, style, className, fetchpriority }) {
+export default function ShatterImage({ src, alt, style, className, fetchpriority, onStateChange }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -35,6 +35,7 @@ export default function ShatterImage({ src, alt, style, className, fetchpriority
     function triggerShatter() {
       if (currentState !== 'INTACT') return;
       currentState = 'SHATTERING';
+      if (onStateChange) onStateChange(currentState);
       shatterStartTime = Date.now();
       if (repairTimer) clearTimeout(repairTimer);
 
@@ -99,6 +100,7 @@ export default function ShatterImage({ src, alt, style, className, fetchpriority
 
     function triggerRepair() {
       currentState = 'REPAIRING';
+      if (onStateChange) onStateChange(currentState);
       repairStartTime = Date.now();
     }
 
@@ -199,12 +201,14 @@ export default function ShatterImage({ src, alt, style, className, fetchpriority
 
       if (currentState === 'SHATTERING' && allShattered) {
         currentState = 'SHATTERED';
+        if (onStateChange) onStateChange(currentState);
         const repairDelay = 3000 + Math.random() * 7000;
         repairTimer = setTimeout(triggerRepair, repairDelay);
       }
 
       if (currentState === 'REPAIRING' && allRepaired) {
         currentState = 'INTACT';
+        if (onStateChange) onStateChange(currentState);
         drawIntact();
         cancelAnimationFrame(animFrame);
         return;

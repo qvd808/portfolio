@@ -136,6 +136,8 @@ function Terminal() {
 }
 
 export default function Hero() {
+  const [shatterState, setShatterState] = useState('INTACT');
+
   return (
     <section className="max-w-page mx-auto px-5 pt-20 pb-10 min-h-[calc(100vh-56px)] flex flex-col justify-center gap-10 relative overflow-hidden" id="hero">
       <HeroLightning />
@@ -186,7 +188,7 @@ export default function Hero() {
 
         <div>
           <div className="shadow-box relative aspect-[3/4] rounded-lg overflow-hidden border border-border bg-bg-2 mb-4 cursor-crosshair">
-            <ShatterImage src={headshot} alt="Vinh Dang" />
+            <ShatterImage src={headshot} alt="Vinh Dang" onStateChange={setShatterState} />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[color-mix(in_oklab,var(--bg)_80%,transparent)] pointer-events-none" style={{ backgroundPosition: '0 40%' }} />
             <div className="absolute bottom-2.5 left-2.5 right-2.5 flex justify-between items-center font-mono text-2xs text-fg">
               <span>vinh.jpeg</span><span className="text-accent">●</span>
@@ -199,7 +201,7 @@ export default function Hero() {
             <div className="flex justify-between items-center py-1.5"><span className="text-fg-4">obsessing over</span><span className="text-fg">FPGA CPU</span></div>
             <div className="flex justify-between items-center py-1.5"><span className="text-fg-4">learning</span><span className="text-fg">Zig</span></div>
             <div className="flex justify-between items-center py-1.5"><span className="text-fg-4">editor</span><span className="text-fg">nvim 🚀</span></div>
-            <div className="flex justify-between items-center py-1.5"><span className="text-fg-4">status</span><span className="text-accent">broke + curious</span></div>
+            <div className="flex justify-between items-center py-1.5"><span className="text-fg-4">status</span><span className="text-accent">{shatterState === 'INTACT' ? 'barely alive + curious' : 'broke + curious'}</span></div>
           </div>
         </div>
       </div>

@@ -198,6 +198,7 @@ export default function Skills() {
   const [catIdx, setCatIdx] = useState(0);
   const [sel, setSel] = useState(0);
   const [view, setView] = useState('explore');
+  const [statsMode, setStatsMode] = useState('recent');
   const [statsKey, setStatsKey] = useState(0);
 
   const cat = CATEGORIES[catIdx];
@@ -286,21 +287,36 @@ export default function Skills() {
         ) : (
           <>
             <div className="flex flex-col gap-2">
-              <div className="shadow-box text-left bg-bg-2 border border-border border-l-[3px] rounded-md px-4 py-3.5 font-inherit text-inherit grid grid-cols-[1fr_auto] gap-1 items-center cursor-default" style={{ borderLeftColor: 'oklch(0.78 0.16 200)' }}>
-                <div className="font-mono text-2xs text-fg-4 tracking-[0.05em]">§ telemetry</div>
-                <div className="text-lg font-medium tracking-[-0.01em]" style={{ color: 'oklch(0.78 0.16 200)' }}>Language Activity</div>
-              </div>
+              <button 
+                className={`shadow-box text-left bg-bg-1 border border-border border-l-[3px] rounded-md px-4 py-3.5 cursor-pointer transition-[background,border-color] duration-200 grid grid-cols-[1fr_auto] gap-1 items-center ${statsMode === 'recent' ? 'bg-bg-2 border-border-strong' : 'hover:bg-bg-2 hover:border-border-strong'}`}
+                onClick={() => { setStatsMode('recent'); setStatsKey(k => k + 1); }}
+                style={{ borderLeftColor: statsMode === 'recent' ? 'oklch(0.78 0.16 200)' : undefined }}
+              >
+                <div className="font-mono text-2xs text-fg-4 tracking-[0.05em] col-start-1 row-start-1">§ telemetry</div>
+                <div className={`text-lg font-medium tracking-[-0.01em] col-start-1 row-start-2 ${statsMode === 'recent' ? '' : 'text-fg'}`} style={statsMode === 'recent' ? { color: 'oklch(0.78 0.16 200)' } : undefined}>12-Month Activity</div>
+                <div className="col-start-2 row-start-1 row-end-4 text-sm self-center" style={{ color: 'oklch(0.78 0.16 200)' }}>{statsMode === 'recent' ? '▶' : ' '}</div>
+              </button>
+
+              <button 
+                className={`shadow-box text-left bg-bg-1 border border-border border-l-[3px] rounded-md px-4 py-3.5 cursor-pointer transition-[background,border-color] duration-200 grid grid-cols-[1fr_auto] gap-1 items-center ${statsMode === 'lifetime' ? 'bg-bg-2 border-border-strong' : 'hover:bg-bg-2 hover:border-border-strong'}`}
+                onClick={() => { setStatsMode('lifetime'); setStatsKey(k => k + 1); }}
+                style={{ borderLeftColor: statsMode === 'lifetime' ? 'oklch(0.78 0.16 130)' : undefined }}
+              >
+                <div className="font-mono text-2xs text-fg-4 tracking-[0.05em] col-start-1 row-start-1">§ history</div>
+                <div className={`text-lg font-medium tracking-[-0.01em] col-start-1 row-start-2 ${statsMode === 'lifetime' ? '' : 'text-fg'}`} style={statsMode === 'lifetime' ? { color: 'oklch(0.78 0.16 130)' } : undefined}>Lifetime Bytes</div>
+                <div className="col-start-2 row-start-1 row-end-4 text-sm self-center" style={{ color: 'oklch(0.78 0.16 130)' }}>{statsMode === 'lifetime' ? '▶' : ' '}</div>
+              </button>
+
               <p className="text-xs text-fg-4 p-3 leading-[1.6] font-mono">
-                // live feed from github.com<br />
-                // recency-weighted<br />
-                // updated daily
+                {statsMode === 'recent' ? (
+                  <>// live feed from github.com<br />// recency-weighted share<br />// updated daily</>
+                ) : (
+                  <>// pure byte sum<br />// across all public repos<br />// no recency filter</>
+                )}
               </p>
-              <div className="px-3 text-2xs text-fg-4 opacity-60">
-                Newer commits weigh more heavily on the results than legacy code.
-              </div>
             </div>
             <div className="shadow-box bg-bg-1 border border-border rounded-lg p-0">
-              <LangStats key={statsKey} />
+              <LangStats key={statsKey} mode={statsMode} />
             </div>
           </>
         )}

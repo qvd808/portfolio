@@ -120,12 +120,12 @@ function relativeTime(iso) {
 // ─── Skeleton card ────────────────────────────────────────────────────────────
 function SkeletonCard() {
   return (
-    <div className="project" style={{ pointerEvents: 'none' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <div style={{ height: 10, width: '60%', background: 'var(--bg-3)', borderRadius: 4, animation: 'pulse-dot 1.4s infinite' }} />
-        <div style={{ height: 14, width: '40%', background: 'var(--bg-3)', borderRadius: 4, animation: 'pulse-dot 1.4s infinite 0.15s' }} />
-        <div style={{ height: 10, width: '85%', background: 'var(--bg-3)', borderRadius: 4, animation: 'pulse-dot 1.4s infinite 0.3s' }} />
-        <div style={{ height: 10, width: '70%', background: 'var(--bg-3)', borderRadius: 4, animation: 'pulse-dot 1.4s infinite 0.45s' }} />
+    <div className="bg-bg-1 border border-border rounded-lg p-5 pointer-events-none">
+      <div className="flex flex-col gap-2.5">
+        <div className="h-2.5 w-3/5 bg-bg-3 rounded animate-pulse-dot" />
+        <div className="h-3.5 w-2/5 bg-bg-3 rounded animate-pulse-dot [animation-delay:0.15s]" />
+        <div className="h-2.5 w-[85%] bg-bg-3 rounded animate-pulse-dot [animation-delay:0.3s]" />
+        <div className="h-2.5 w-[70%] bg-bg-3 rounded animate-pulse-dot [animation-delay:0.45s]" />
       </div>
     </div>
   );
@@ -139,49 +139,49 @@ function ProjectCard({ repo, badge, badgeStyle }) {
 
   return (
     <a
-      className="project"
+      className="project group bg-bg-1 border border-border rounded-lg p-5 flex flex-col gap-3.5 transition-[background,border-color,transform] duration-200 cursor-pointer relative will-change-transform hover:border-border-strong hover:bg-bg-2 hover:-translate-y-px"
       href={repo.html_url}
       target="_blank"
       rel="noreferrer"
     >
-      <div className="project-head">
-        <div className="project-title-wrap">
-          <span className="project-repo">{repo.full_name}</span>
-          <h3 className="project-title">{repo.name}</h3>
+      <div className="flex justify-between items-start gap-3">
+        <div className="flex flex-col gap-1 min-w-0">
+          <span className="font-mono text-xs text-fg-4">{repo.full_name}</span>
+          <h3 className="text-[18px] font-medium tracking-[-0.015em] text-fg">{repo.name}</h3>
         </div>
         {badge && (
-          <span className="project-status" style={badgeStyle}>
-            <span className="dot" style={{ background: badgeStyle?.color ?? 'var(--accent)' }} />
+          <span className="inline-flex items-center gap-[5px] font-mono text-2xs px-[7px] py-[3px] rounded-[4px] uppercase tracking-[0.04em] whitespace-nowrap shrink-0" style={badgeStyle}>
+            <span className="w-[5px] h-[5px] rounded-full" style={{ background: badgeStyle?.color ?? 'var(--accent)' }} />
             {badge}
           </span>
         )}
       </div>
 
-      <div className="project-desc">
+      <div className="text-md text-fg-2 leading-[1.55]" style={{ textWrap: 'pretty' }}>
         {repo.description || 'No description yet.'}
       </div>
 
-      <div className="project-foot">
+      <div className="flex justify-between items-center gap-3 flex-wrap">
         {repo.language && (
-          <div className="project-lang">
-            <span className="lang-dot" style={{ background: `oklch(0.75 0.15 ${hue})` }} />
+          <div className="flex items-center gap-1.5 font-mono text-xs text-fg-3">
+            <span className="w-2 h-2 rounded-full" style={{ background: `oklch(0.75 0.15 ${hue})` }} />
             <span>{repo.language}</span>
           </div>
         )}
-        <div className="project-stack">
-          {topics.map(t => <span key={t} className="stack-tag">{t}</span>)}
+        <div className="flex flex-wrap gap-1.5">
+          {topics.map(t => <span key={t} className="shadow-box font-mono text-2xs px-[7px] py-[3px] bg-bg-2 border border-border rounded-sm text-fg-3">{t}</span>)}
         </div>
       </div>
 
-      <div className="project-meta">
-        <span className="stat">
+      <div className="flex justify-between items-center pt-3 mt-auto border-t border-dashed border-border font-mono text-2xs text-fg-4">
+        <span className="inline-flex items-center gap-1">
           {repo.stargazers_count != null && (
-            <><b>{repo.stargazers_count}</b> stars</>
+            <><b className="text-fg-2 font-medium">{repo.stargazers_count}</b> stars</>
           )}
           {pushed && repo.stargazers_count != null && ' · '}
           {pushed && `pushed ${pushed}`}
         </span>
-        <span className="project-arrow">→</span>
+        <span className="text-accent opacity-0 transition-[opacity,transform] duration-200 group-hover:opacity-100 group-hover:translate-x-[3px]">→</span>
       </div>
     </a>
   );
@@ -190,30 +190,20 @@ function ProjectCard({ repo, badge, badgeStyle }) {
 // ─── Panel wrapper ────────────────────────────────────────────────────────────
 function Panel({ label, title, meta, children }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, minWidth: 0 }}>
+    <div className="flex flex-col min-w-0">
       {/* Panel header */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'baseline',
-        justifyContent: 'space-between',
-        gap: 12,
-        marginBottom: 16,
-        paddingBottom: 12,
-        borderBottom: '1px solid var(--border)',
-      }}>
+      <div className="flex items-baseline justify-between gap-3 mb-4 pb-3 border-b border-border">
         <div>
-          <div className="mono" style={{ fontSize: 10, color: 'var(--fg-4)', letterSpacing: '0.06em', marginBottom: 4 }}>
-            {label}
-          </div>
-          <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg)' }}>{title}</h3>
+          <div className="font-mono text-2xs text-fg-4 tracking-[0.06em] mb-1">{label}</div>
+          <h3 className="text-lg font-semibold text-fg">{title}</h3>
         </div>
         {meta && (
-          <div className="mono" style={{ fontSize: 10, color: 'var(--fg-4)', whiteSpace: 'nowrap' }}>{meta}</div>
+          <div className="font-mono text-2xs text-fg-4 whitespace-nowrap">{meta}</div>
         )}
       </div>
 
       {/* Cards */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div className="flex flex-col gap-3">
         {children}
       </div>
     </div>
@@ -228,29 +218,22 @@ export default function Projects() {
   const recentLoading   = recent   === null;
 
   return (
-    <section className="section" id="projects">
-      <div className="section-label">§ projects</div>
-      <h2 className="section-title">
-        Some things I've built <em className="serif">(or am building).</em>
+    <section className="max-w-page mx-auto px-5 py-[calc(80px*var(--density))] [contain:layout_style]" id="projects">
+      <div className="section-label font-mono text-xs text-fg-4 tracking-[0.04em] uppercase flex items-center gap-2.5 mb-6">§ projects</div>
+      <h2 className="section-title font-medium tracking-[-0.025em] leading-[1.1] max-w-[760px] mb-3">
+        Some things I've built <em className="font-serif italic tracking-[-0.01em]">(or am building).</em>
       </h2>
-      <p className="section-sub">
+      <p className="text-lg text-fg-3 max-w-[640px] mb-12" style={{ textWrap: 'pretty' }}>
         Left panel: projects I'm proud of. Right panel: whatever I pushed most recently.
         {error && (
-          <span style={{ color: 'var(--fg-4)', marginLeft: 8 }}>
+          <span className="text-fg-4 ml-2">
             · (GitHub API unavailable — showing cached data)
           </span>
         )}
       </p>
 
       {/* Two-panel grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: 32,
-        marginTop: 32,
-      }}
-        className="projects-panels"
-      >
+      <div className="projects-panels grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8">
         {/* ── Showcase panel ── */}
         <Panel
           label="// FEATURED"
@@ -286,20 +269,12 @@ export default function Projects() {
                 />
               ))
               : (
-                <div style={{
-                  padding: '24px 20px',
-                  background: 'var(--bg-1)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 10,
-                  color: 'var(--fg-4)',
-                  fontSize: 13,
-                  fontFamily: 'JetBrains Mono, monospace',
-                }}>
-                  <span style={{ color: 'var(--fg-4)' }}>// </span>
+                <div className="shadow-box p-6 bg-bg-1 border border-border rounded-lg text-fg-4 text-base font-mono">
+                  <span className="text-fg-4">// </span>
                   could not load recent repos
-                  <div style={{ marginTop: 8 }}>
+                  <div className="mt-2">
                     <a href="https://github.com/qvd808?tab=repositories" target="_blank" rel="noreferrer"
-                      style={{ color: 'var(--accent)', textDecoration: 'underline', fontSize: 11 }}>
+                      className="text-accent underline text-xs">
                       view on github ↗
                     </a>
                   </div>
@@ -308,15 +283,6 @@ export default function Projects() {
           }
         </Panel>
       </div>
-
-      {/* Responsive: stack on mobile via CSS below */}
-      <style>{`
-        @media (max-width: 720px) {
-          .projects-panels {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }

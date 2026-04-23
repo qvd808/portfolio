@@ -1,159 +1,90 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-// ─── Lightning canvas ────────────────────────────────────────────────────────
-function Lightning({ active }) {
+function IntroLightning({ active }) {
   const canvasRef = useRef(null);
-  const rafRef = useRef(null);
+  const rafRef = useRef();
   const lifeRef = useRef(0);
-  const boltGeometryRef = useRef({ pts: [], flash: { x: 0, y: 0 }, forks: [] });
+  const boltRef = useRef({ pts: [], flash: { x: 0, y: 0 }, forks: [] });
 
-  const generateBolt = useCallback((w, h) => {
-    // Pick a random corner: 0=Top-Left, 1=Top-Right, 2=Bottom-Right, 3=Bottom-Left
+  const gen = useCallback((w, h) => {
     const corner = Math.floor(Math.random() * 4);
-    let startX, startY;
-    const margin = 100; // Start off-screen for a longer, more powerful strike
-
-    if (corner === 0) {
-      startX = -margin + Math.random() * 50;
-      startY = -margin + Math.random() * 50;
-    } else if (corner === 1) {
-      startX = w + margin - Math.random() * 50;
-      startY = -margin + Math.random() * 50;
-    } else if (corner === 2) {
-      startX = w + margin - Math.random() * 50;
-      startY = h + margin - Math.random() * 50;
-    } else {
-      startX = -margin + Math.random() * 50;
-      startY = h + margin - Math.random() * 50;
-    }
-
-    // Target the center
-    const endX = w * 0.5 + (Math.random() - 0.5) * 60;
-    const endY = h * 0.5 + (Math.random() - 0.5) * 20;
-
-    // Increased steps from 14 to 26 for a longer, more jagged, violent path
-    const steps = 26;
-    const pts = [{ x: startX, y: startY }];
-
+    const margin = 100;
+    let sx, sy;
+    if (corner === 0) { sx = -margin + Math.random() * 50; sy = -margin + Math.random() * 50 }
+    else if (corner === 1) { sx = w + margin - Math.random() * 50; sy = -margin + Math.random() * 50 }
+    else if (corner === 2) { sx = w + margin - Math.random() * 50; sy = h + margin - Math.random() * 50 }
+    else { sx = -margin + Math.random() * 50; sy = h + margin - Math.random() * 50 }
+    const ex = w * .5 + (Math.random() - .5) * 60;
+    const ey = h * .5 + (Math.random() - .5) * 20;
+    const steps = 22;
+    const pts = [{ x: sx, y: sy }];
     for (let i = 1; i < steps; i++) {
       const t = i / steps;
-      const bx = startX + (endX - startX) * t;
-      const by = startY + (endY - startY) * t;
-      // Increased jitter for wider chaotic arcs
-      const jitter = (1 - t) * 140;
-      pts.push({
-        x: bx + (Math.random() - 0.5) * jitter,
-        y: by + (Math.random() - 0.5) * jitter * 0.5
-      });
+      const bx = sx + (ex - sx) * t, by = sy + (ey - sy) * t;
+      const j = (1 - t) * 130;
+      pts.push({ x: bx + (Math.random() - .5) * j, y: by + (Math.random() - .5) * j * .5 });
     }
-    pts.push({ x: endX, y: endY });
-
-    // Generate two forks instead of one for more power
+    pts.push({ x: ex, y: ey });
     const forks = [];
     for (let f = 0; f < 2; f++) {
-      const forkFrom = Math.floor(steps * (0.3 + Math.random() * 0.5));
-      if (pts[forkFrom]) {
-        forks.push({
-          startX: pts[forkFrom].x,
-          startY: pts[forkFrom].y,
-          endX: pts[forkFrom].x + (Math.random() - 0.5) * 150,
-          endY: pts[forkFrom].y + (Math.random() - 0.5) * 150
-        });
-      }
+      const fi = Math.floor(steps * (.3 + Math.random() * .5));
+      if (pts[fi]) forks.push({ sx: pts[fi].x, sy: pts[fi].y, ex: pts[fi].x + (Math.random() - .5) * 150, ey: pts[fi].y + (Math.random() - .5) * 150 });
     }
-
-    boltGeometryRef.current = { pts, flash: { x: endX, y: endY }, forks };
+    boltRef.current = { pts, flash: { x: ex, y: ey }, forks };
   }, []);
 
-  const drawBolt = useCallback((ctx, w, h) => {
+  const draw = useCallback((ctx, w, h) => {
     ctx.clearRect(0, 0, w, h);
-    if (lifeRef.current <= 0 || boltGeometryRef.current.pts.length === 0) return;
-
-    const alpha = lifeRef.current;
-    const { pts, flash, forks } = boltGeometryRef.current;
-
-    // Increased thicknesses (26, 14, 6, 3) for a blindingly powerful core
-    [26, 14, 6, 3].forEach((width, qi) => {
-      const glowAlphas = [0.08, 0.15, 0.6, 1.0];
+    if (lifeRef.current <= 0) return;
+    const a = lifeRef.current;
+    const { pts, flash, forks } = boltRef.current;
+    [26, 14, 6, 3].forEach((lw, qi) => {
+      const ga = [0.08, 0.15, 0.6, 1.0][qi];
       ctx.beginPath();
       ctx.moveTo(pts[0].x, pts[0].y);
       for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
-      ctx.strokeStyle = `rgba(200, 230, 255, ${glowAlphas[qi] * alpha})`;
-      ctx.lineWidth = width;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.shadowColor = 'rgba(150, 210, 255, 1)';
+      ctx.strokeStyle = `rgba(200,230,255,${ga * a})`;
+      ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.shadowColor = 'rgba(150,210,255,1)';
       ctx.shadowBlur = qi < 2 ? 30 : 0;
       ctx.stroke();
     });
-
-    // Draw branching mini forks
-    forks.forEach(fork => {
-      ctx.beginPath();
-      ctx.moveTo(fork.startX, fork.startY);
-      ctx.lineTo(fork.endX, fork.endY);
-      ctx.strokeStyle = `rgba(180, 220, 255, ${0.5 * alpha})`;
-      ctx.lineWidth = 2;
-      ctx.stroke();
+    forks.forEach(f => {
+      ctx.beginPath(); ctx.moveTo(f.sx, f.sy); ctx.lineTo(f.ex, f.ey);
+      ctx.strokeStyle = `rgba(180,220,255,${.5 * a})`; ctx.lineWidth = 2; ctx.stroke();
     });
-
-    // Bigger Impact flash
-    const grad = ctx.createRadialGradient(flash.x, flash.y, 0, flash.x, flash.y, 120);
-    grad.addColorStop(0, `rgba(220, 240, 255, ${0.8 * alpha})`);
-    grad.addColorStop(0.3, `rgba(120, 180, 255, ${0.5 * alpha})`);
-    grad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.beginPath();
-    ctx.arc(flash.x, flash.y, 120, 0, Math.PI * 2);
-    ctx.fillStyle = grad;
-    ctx.fill();
+    const g = ctx.createRadialGradient(flash.x, flash.y, 0, flash.x, flash.y, 120);
+    g.addColorStop(0, `rgba(220,240,255,${.8 * a})`);
+    g.addColorStop(.3, `rgba(120,180,255,${.5 * a})`);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.beginPath(); ctx.arc(flash.x, flash.y, 120, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
   }, []);
 
   useEffect(() => {
     if (!active) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-
-    lifeRef.current = 1.0;
-    generateBolt(canvas.width, canvas.height);
-
-    let lastTime = performance.now();
-    const tick = (now) => {
-      const dt = (now - lastTime) / 1000;
-      lastTime = now;
-      // Slightly faster fade out so the strike feels violently fast
-      lifeRef.current = Math.max(0, lifeRef.current - dt * 4.0);
-
-      drawBolt(ctx, canvas.width, canvas.height);
-
-      if (lifeRef.current > 0) {
-        rafRef.current = requestAnimationFrame(tick);
-      } else {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
+    const c = canvasRef.current; if (!c) return;
+    const ctx = c.getContext('2d');
+    lifeRef.current = 1;
+    gen(c.width, c.height);
+    let last = performance.now();
+    const tick = now => {
+      const dt = (now - last) / 1000; last = now;
+      lifeRef.current = Math.max(0, lifeRef.current - dt * 4);
+      draw(ctx, c.width, c.height);
+      if (lifeRef.current > 0) rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-
     return () => cancelAnimationFrame(rafRef.current);
-  }, [active, drawBolt, generateBolt]);
+  }, [active, gen, draw]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={1000} // Increased canvas size to handle off-screen corner rendering
-      height={600}
-      style={{
-        position: 'absolute',
-        top: '50%', left: '50%',
-        transform: 'translate(-50%, -50%)',
-        pointerEvents: 'none',
-        zIndex: 2,
-      }}
-    />
+    <canvas ref={canvasRef} width={1000} height={600} style={{
+      position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+      pointerEvents: 'none', zIndex: 2,
+    }} />
   );
 }
 
-// ─── Glitch block overlay canvas ─────────────────────────────────────────────
 function GlitchBlocks({ active }) {
   const canvasRef = useRef(null);
   const rafRef = useRef(null);
@@ -222,79 +153,56 @@ function GlitchBlocks({ active }) {
   );
 }
 
-// ─── Main intro ───────────────────────────────────────────────────────────────
-const WORDS = ['Welcome', 'to my', 'WORLD.'];
-const HOLD_MS = 820;
-const LIGHTNING_MS = 320;
-
+// Shortened intro splash (~1.2s). Esc / Enter / click to skip.
+// Calls onDone when the fade-out finishes so the parent can unmount it.
 export default function GlitchIntro({ onDone }) {
-  // Added an 'outro' phase to cleanly kill the word animation
-  const [phase, setPhase] = useState('show');   // 'show' | 'lightning' | 'next' | 'outro'
-  const [idx, setIdx] = useState(0);
+  const [phase, setPhase] = useState('show'); // show → strike → outro
   const [fading, setFading] = useState(false);
-  const [lightningKey, setLightningKey] = useState(0);
+  const [lk, setLk] = useState(0);
+  const done = useRef(false);
+
+  const finish = useCallback(() => {
+    if (done.current) return; done.current = true;
+    setFading(true);
+    setTimeout(() => onDone?.(), 140);
+  }, [onDone]);
 
   useEffect(() => {
     if (phase === 'show') {
-      const t = setTimeout(() => setPhase('lightning'), HOLD_MS);
+      const t = setTimeout(() => setPhase('strike'), 500);
       return () => clearTimeout(t);
     }
-    if (phase === 'lightning') {
-      setLightningKey(k => k + 1);
-      const t = setTimeout(() => setPhase('next'), LIGHTNING_MS);
+    if (phase === 'strike') {
+      setLk(k => k + 1);
+      const t = setTimeout(() => { setPhase('outro'); finish(); }, 340);
       return () => clearTimeout(t);
     }
-    if (phase === 'next') {
-      if (idx < WORDS.length - 1) {
-        setIdx(i => i + 1);
-        setPhase('show');
-      } else {
-        // As soon as the lightning on the last word finishes, move to outro.
-        setPhase('outro');
-        setFading(true);
-        // Fire onDone early so content fades in under/behind the splash while it's still fading out.
-        // The splash (z-index 100) covers it, so there's no visible pop — just a smooth handoff.
-        setTimeout(() => onDone?.(), 150);
-      }
-    }
-  }, [phase, idx, onDone]);
+  }, [phase, finish]);
 
-  const isLightning = phase === 'lightning';
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape' || e.key === 'Enter') finish(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [finish]);
+
+  const isLightning = phase === 'strike';
+  const word = 'WELCOME';
 
   return (
-    <div className={`glitch-splash ${fading ? 'fading' : ''}`} style={{ overflow: 'hidden' }}>
-
-      <div
-        className="lightning-flash"
-        style={{ opacity: isLightning ? 1 : 0 }}
-      />
-
+    <div className={`glitch-splash ${fading ? 'fading' : ''}`} onClick={finish}>
+      <div className="lightning-flash" style={{ opacity: isLightning ? 1 : 0 }} />
+      <IntroLightning active={isLightning} key={lk} />
       <GlitchBlocks active={isLightning} />
-      <Lightning active={isLightning} key={lightningKey} />
-
-      {/* Conditionally render the words. They will vanish INSTANTLY in the 'outro' phase */}
       {phase !== 'outro' && (
         <>
-          <div
-            className={`glitch-word layer-base ${isLightning ? 'glitch-intense' : ''}`}
-            key={`b-${idx}-${phase}`}
-          >
-            {WORDS[idx]}
-          </div>
-          <div
-            className={`glitch-word layer-top ${isLightning ? 'glitch-intense' : ''}`}
-            key={`t-${idx}-${phase}`}
-          >
-            {WORDS[idx]}
-          </div>
-          <div
-            className={`glitch-word layer-bot ${isLightning ? 'glitch-intense' : ''}`}
-            key={`d-${idx}-${phase}`}
-          >
-            {WORDS[idx]}
-          </div>
+          <div className={`glitch-word layer-base ${isLightning ? 'glitch-intense' : ''}`} key={`b-${phase}`}>{word}</div>
+          <div className={`glitch-word layer-top ${isLightning ? 'glitch-intense' : ''}`} key={`t-${phase}`}>{word}</div>
+          <div className={`glitch-word layer-bot ${isLightning ? 'glitch-intense' : ''}`} key={`d-${phase}`}>{word}</div>
         </>
       )}
+      <div className="absolute bottom-[30px] left-1/2 -translate-x-1/2 font-mono text-[11px] text-[rgba(230,235,255,0.55)] z-10 tracking-[0.06em]">
+        <kbd className="border border-[rgba(230,235,255,0.3)] px-1.5 py-0.5 rounded-[3px] bg-[rgba(230,235,255,0.05)] mx-1">esc</kbd> to skip
+      </div>
     </div>
   );
 }

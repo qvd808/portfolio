@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import Atmosphere from './components/Atmosphere';
 import GlitchIntro from './components/GlitchIntro';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -12,21 +13,25 @@ import './index.css';
 
 function Chrome({ theme, onToggleTheme }) {
   return (
-    <header className="chrome">
-      <div className="chrome-inner">
-        <div className="chrome-left">
-          <div className="logo">
-            <span className="logo-dot" />
-            <span>vinh<span style={{ color: 'var(--fg-4)' }}>.</span>dang</span>
-            <span style={{ color: 'var(--fg-4)', marginLeft: 6 }}>// eng.</span>
+    <header className="sticky top-0 z-40 border-b border-border bg-[color-mix(in_oklab,var(--bg)_85%,transparent)] backdrop-blur-[8px] [-webkit-backdrop-filter:blur(8px)]">
+      <div className="max-w-page mx-auto px-5 py-2.5 flex items-center justify-between gap-5">
+        <div className="flex items-center gap-3.5">
+          <div className="font-mono font-semibold text-base flex items-center gap-2 tracking-tight">
+            <span className="w-2 h-2 rounded-full bg-accent shadow-[0_0_12px_var(--accent)] animate-pulse-dot" />
+            <span>vinh<span className="text-fg-4">.</span>dang</span>
+            <span className="text-fg-4 ml-1.5">// eng.</span>
           </div>
         </div>
-        <nav className="chrome-right" style={{ display: 'flex' }} aria-label="Main Navigation">
-          <a href="#about" className="nav-link">about</a>
-          <a href="#skills" className="nav-link">skills</a>
-          <a href="#projects" className="nav-link">projects</a>
-          <a href="#contact" className="nav-link">contact</a>
-          <button className="theme-toggle" onClick={onToggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
+        <nav className="flex items-center gap-3.5" aria-label="Main Navigation">
+          <a href="#about" className="font-mono text-sm text-fg-3 px-2.5 py-1.5 rounded hover:text-fg hover:bg-bg-2 transition-[background,color] duration-150 cursor-pointer">about</a>
+          <a href="#skills" className="font-mono text-sm text-fg-3 px-2.5 py-1.5 rounded hover:text-fg hover:bg-bg-2 transition-[background,color] duration-150 cursor-pointer">skills</a>
+          <a href="#projects" className="font-mono text-sm text-fg-3 px-2.5 py-1.5 rounded hover:text-fg hover:bg-bg-2 transition-[background,color] duration-150 cursor-pointer">projects</a>
+          <a href="#contact" className="font-mono text-sm text-fg-3 px-2.5 py-1.5 rounded hover:text-fg hover:bg-bg-2 transition-[background,color] duration-150 cursor-pointer">contact</a>
+          <button
+            className="font-mono text-xs bg-bg-2 border border-border text-fg-2 px-2.5 py-1.5 rounded cursor-pointer flex items-center gap-1.5 hover:bg-bg-3 hover:text-fg transition-[background,color] duration-150"
+            onClick={onToggleTheme}
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          >
             {theme === 'dark' ? '◐ DARK' : '◑ CREAM'}
           </button>
         </nav>
@@ -37,9 +42,9 @@ function Chrome({ theme, onToggleTheme }) {
 
 function Footer() {
   return (
-    <footer className="footer">
-      <div className="build">
-        <span style={{ color: 'var(--accent)' }}>●</span>
+    <footer className="max-w-page mx-auto px-5 pt-10 pb-[60px] border-t border-border flex justify-between items-center gap-5 flex-wrap font-mono text-xs text-fg-4">
+      <div className="flex items-center gap-2.5">
+        <span className="text-accent">●</span>
         <span>build · hand-crafted · {new Date().toISOString().slice(0, 10)}</span>
       </div>
       <div>© 2026 vinh dang · all outputs verified</div>
@@ -47,12 +52,8 @@ function Footer() {
   );
 }
 
-// Elements whose text will cast shadows on the brick wall
-const SHADOW_SELECTORS = '.hero-heading, .section-title, .contact-title';
-
 export default function App() {
   // ── 404 easter egg ──────────────────────────────────────────────────────────
-  // Check if pathname (ignoring trailing slash) ends with /404
   if (window.location.pathname.replace(/\/$/, '').endsWith('/404')) {
     return <NotFound />;
   }
@@ -62,111 +63,7 @@ export default function App() {
   const [introDone, setIntroDone] = useState(() => {
     try { return sessionStorage.getItem('introSeen') === '1'; } catch { return false; }
   });
-  const shadowContainerRef = useRef(null);
   const isMobile = useIsMobile();
-
-  useEffect(() => {
-    const body = document.body;
-
-    // Skip entire flashlight system on mobile — no mouse, no GPU budget
-    if (isMobile) return;
-
-    body.classList.add('spotlight-on');
-
-    const container = shadowContainerRef.current;
-
-    let raf;
-    let syncQueued = false;
-
-    const syncClones = () => {
-      if (!container || document.visibilityState === 'hidden') return;
-      syncQueued = false; // Reset queue flag
-
-      const targets = Array.from(document.querySelectorAll(SHADOW_SELECTORS));
-      if (!targets.length) return;
-
-      // Build clones if missing
-      if (container.children.length !== targets.length) {
-        container.innerHTML = '';
-        targets.forEach(el => {
-          const clone = el.cloneNode(true);
-          clone.style.position = 'fixed';
-          clone.style.margin = '0';
-          clone.removeAttribute('id');
-          clone.style.pointerEvents = 'none';
-          clone.setAttribute('aria-hidden', 'true');
-          clone.style.boxSizing = 'border-box';
-          clone.style.webkitTextStroke = '1.5px black';
-          clone.style.color = 'black';
-          container.appendChild(clone);
-        });
-      }
-
-      // Batch DOM Reads
-      const rects = targets.map(el => el.getBoundingClientRect());
-
-      // Batch DOM Writes
-      targets.forEach((el, i) => {
-        const clone = container.children[i];
-        if (!clone) return;
-        const rect = rects[i];
-
-        if (rect.width === 0 || rect.height === 0) {
-          clone.style.display = 'none';
-          return;
-        }
-        clone.style.display = 'block';
-        clone.style.left = rect.left + 'px';
-        clone.style.top = rect.top + 'px';
-        clone.style.width = rect.width + 'px';
-        clone.style.height = rect.height + 'px';
-      });
-    };
-
-    const queueSync = () => {
-      if (!syncQueued) {
-        syncQueued = true;
-        requestAnimationFrame(syncClones);
-      }
-    };
-
-    // Keep clones aligned on scroll and structural changes
-    window.addEventListener('scroll', queueSync, { passive: true });
-    const onResize = () => {
-      if (container) container.innerHTML = ''; // Force full rebuild
-      queueSync();
-    };
-    window.addEventListener('resize', onResize);
-
-    // Throttled fallback sync for late-loading fonts/images
-    const syncInterval = setInterval(queueSync, 1000);
-    // Initial sync
-    queueSync();
-
-    let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
-    let cx = tx, cy = ty;
-
-    const onMove = (e) => { tx = e.clientX; ty = e.clientY; };
-
-    const loop = () => {
-      cx += (tx - cx) * 0.18;
-      cy += (ty - cy) * 0.18;
-      body.style.setProperty('--spot-x', cx + 'px');
-      body.style.setProperty('--spot-y', cy + 'px');
-
-      raf = requestAnimationFrame(loop);
-    };
-
-    window.addEventListener('mousemove', onMove);
-    raf = requestAnimationFrame(loop);
-    return () => {
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('scroll', queueSync);
-      window.removeEventListener('resize', onResize);
-      clearInterval(syncInterval);
-      cancelAnimationFrame(raf);
-    };
-  }, [isMobile]);
 
   useEffect(() => {
     const onMsg = (e) => {
@@ -191,12 +88,9 @@ export default function App() {
           try { sessionStorage.setItem('introSeen', '1'); } catch { }
         }} />
       )}
-      {!isMobile && <div className="brick-layer" />}
-      {!isMobile && (
-        <div className="shadow-mask-layer">
-          <div ref={shadowContainerRef} className="shadow-transform-layer" />
-        </div>
-      )}
+
+      {!isMobile && <Atmosphere />}
+
       <Chrome theme={tweakState.theme} onToggleTheme={toggleTheme} />
       <main style={{
         opacity: introDone ? 1 : 0,

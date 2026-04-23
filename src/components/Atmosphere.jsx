@@ -1,25 +1,28 @@
 import { useEffect, useRef } from 'react';
 
 
-// Clones headings and boxes as black silhouettes behind the spotlight mask.
 function ShadowSystem({ selectors }) {
-  const ref = useRef(null);
+  const containerRef = useRef(null);
+
   useEffect(() => {
-    const container = ref.current; if (!container) return;
-    let queued = false;
-    const sync = () => {
-      queued = false;
+    const container = containerRef.current; if (!container) return;
+    
+    let lastLayoutHash = '';
+    
+    const buildLayout = () => {
       const targets = Array.from(document.querySelectorAll(selectors));
       if (!targets.length) return;
-      if (container.children.length !== targets.length) {
+      
+      const domHash = targets.length + '-' + targets.map(t => t.tagName).join('');
+      if (domHash !== lastLayoutHash) {
         container.innerHTML = '';
         targets.forEach(el => {
           let clone;
-          
-          // Optimization: If it's a structural box (like a card or image), 
-          // do NOT deep clone its children. Just create a black rect matching its border-radius.
-          const isText = ['H1', 'H2', 'H3', 'H4', 'H5'].includes(el.tagName) || el.classList.contains('hero-heading') || el.classList.contains('section-title') || el.classList.contains('contact-title');
-          
+          const isText = ['H1', 'H2', 'H3', 'H4', 'H5'].includes(el.tagName) || 
+                         el.classList.contains('hero-heading') || 
+                         el.classList.contains('section-title') || 
+                         el.classList.contains('contact-title');
+                         
           if (!isText) {
             clone = document.createElement('div');
             clone.style.backgroundColor = 'black';
@@ -31,7 +34,7 @@ function ShadowSystem({ selectors }) {
           }
           
           Object.assign(clone.style, {
-            position: 'fixed', margin: '0', pointerEvents: 'none',
+            position: 'absolute', margin: '0', pointerEvents: 'none',
             boxSizing: 'border-box',
             filter: 'brightness(0) blur(4px)',
             willChange: 'transform'
@@ -40,43 +43,69 @@ function ShadowSystem({ selectors }) {
           clone.setAttribute('aria-hidden', 'true');
           container.appendChild(clone);
         });
+        lastLayoutHash = domHash;
       }
       
-      const wh = window.innerHeight;
-      const rects = targets.map(el => el.getBoundingClientRect());
+      const scrollX = window.scrollX;
+      const scrollY = window.scrollY;
       
       targets.forEach((el, i) => {
         const c = container.children[i]; if (!c) return;
-        const r = rects[i];
+        const r = el.getBoundingClientRect();
         
-        // GPU optimization: Completely skip shadow blurring for offscreen elements
-        if (r.width === 0 || r.height === 0 || r.bottom < -150 || r.top > wh + 150) { 
-          c.style.display = 'none'; 
-          return; 
+        if (r.width === 0 || r.height === 0) {
+          c.style.display = 'none';
+          return;
         }
         
         c.style.display = 'block';
-        c.style.left = r.left + 'px'; 
-        c.style.top = r.top + 'px';
-        c.style.width = r.width + 'px'; 
-        c.style.height = r.height + 'px';
+        c.style.left = Math.round(r.left + scrollX) + 'px';
+        c.style.top = Math.round(r.top + scrollY) + 'px';
+        c.style.width = Math.round(r.width) + 'px';
+        c.style.height = Math.round(r.height) + 'px';
       });
     };
-    const q = () => { if (!queued) { queued = true; requestAnimationFrame(sync); } };
-    window.addEventListener('scroll', q, { passive: true });
-    const onResize = () => { container.innerHTML = ''; q(); };
+    
+    let resizeTimer;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => requestAnimationFrame(buildLayout), 100);
+    };
+    
+    // The GPU now handles all scrolling perfectly naturally with one transform matrix!
+    // No layout thrashing or node updates are computed during scrolling.
+    let scrollRaf;
+    const onScroll = () => {
+      cancelAnimationFrame(scrollRaf);
+      scrollRaf = requestAnimationFrame(() => {
+         container.style.transform = `translate3d(${-window.scrollX}px, ${-window.scrollY}px, 0)`;
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize);
-    const interval = setInterval(q, 1000);
-    q();
+    
+    const interval = setInterval(() => requestAnimationFrame(buildLayout), 2000);
+    
+    buildLayout();
+    onScroll();
+    setTimeout(buildLayout, 1000);
+    setTimeout(buildLayout, 2500);
+    
     return () => {
-      window.removeEventListener('scroll', q);
+      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
       clearInterval(interval);
+      clearTimeout(resizeTimer);
+      cancelAnimationFrame(scrollRaf);
     };
   }, [selectors]);
+
   return (
     <div className="shadow-mask-layer">
-      <div ref={ref} className="shadow-transform-layer" />
+      <div className="shadow-transform-layer">
+        <div ref={containerRef} style={{ position: 'absolute', inset: 0, willChange: 'transform' }} />
+      </div>
     </div>
   );
 }
@@ -85,6 +114,8 @@ function ShadowSystem({ selectors }) {
 export default function Atmosphere({
   selectors = '.hero-heading, .section-title, .contact-title, .project, .portrait-wrap, .shadow-box',
 }) {
+  const providerRef = useRef(null);
+  
   useEffect(() => {
     document.body.classList.add('spotlight-on');
     let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
@@ -109,16 +140,21 @@ export default function Atmosphere({
       if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
         cx = tx;
         cy = ty;
-        document.body.style.setProperty('--spot-x', cx + 'px');
-        document.body.style.setProperty('--spot-y', cy + 'px');
+        if (providerRef.current) {
+          providerRef.current.style.setProperty('--spot-x', cx + 'px');
+          providerRef.current.style.setProperty('--spot-y', cy + 'px');
+        }
         isRunning = false;
         return;
       }
       
       cx += dx * 0.18;
       cy += dy * 0.18;
-      document.body.style.setProperty('--spot-x', cx + 'px');
-      document.body.style.setProperty('--spot-y', cy + 'px');
+      
+      if (providerRef.current) {
+        providerRef.current.style.setProperty('--spot-x', cx + 'px');
+        providerRef.current.style.setProperty('--spot-y', cy + 'px');
+      }
       raf = requestAnimationFrame(loop);
     };
     
@@ -131,10 +167,11 @@ export default function Atmosphere({
     };
   }, []);
   return (
-    <>
+    <div ref={providerRef} style={{ display: 'contents' }}>
+      <div className="spotlight-bloom" />
       <div className="neon-layer" />
       <div className="brick-layer" />
       <ShadowSystem selectors={selectors} />
-    </>
+    </div>
   );
 }

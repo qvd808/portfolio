@@ -269,7 +269,7 @@ export default function Projects() {
                 />
               ))
               : (
-                <div className="p-6 bg-bg-1 border border-border rounded-lg text-fg-4 text-base font-mono">
+                <div className="shadow-box p-6 bg-bg-1 border border-border rounded-lg text-fg-4 text-base font-mono">
                   <span className="text-fg-4">// </span>
                   could not load recent repos
                   <div className="mt-2">

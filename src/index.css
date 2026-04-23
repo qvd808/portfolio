@@ -277,8 +277,7 @@ body.spotlight-on .brick-layer {
 }
 
 /* Warm flashlight bloom + chromatic edge */
-body.spotlight-on::after {
-  content: "";
+.spotlight-bloom {
   position: fixed;
   inset: 0;
   pointer-events: none;
@@ -308,7 +307,7 @@ body.spotlight-on::after {
   75% { opacity: 0.85; filter: brightness(0.9); }
 }
 
-[data-theme="light"] body.spotlight-on::after {
+[data-theme="light"] .spotlight-bloom {
   mix-blend-mode: overlay;
   background: radial-gradient(circle 100px at var(--spot-x) var(--spot-y),
     oklch(0.96 0.05 70 / 0.5) 0%,
@@ -317,7 +316,7 @@ body.spotlight-on::after {
 }
 
 @media (pointer: coarse) {
-  body.spotlight-on::after {
+  .spotlight-bloom {
     display: none;
   }
 }

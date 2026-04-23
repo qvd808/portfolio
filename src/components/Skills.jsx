@@ -221,7 +221,7 @@ export default function Skills() {
       </p>
 
       <div className="flex gap-2.5 mb-5 items-center">
-        <div className="inline-flex bg-bg-2 border border-border rounded overflow-hidden">
+        <div className="shadow-box inline-flex bg-bg-2 border border-border rounded overflow-hidden">
           <button
             className={`flex-1 bg-transparent border-none px-3.5 py-2 font-inherit text-2xs cursor-pointer uppercase tracking-[0.04em] transition-[background,color] duration-150 ${view === 'explore' ? 'bg-accent text-[oklch(0.12_0.01_250)] font-semibold' : 'text-fg-3 hover:text-fg'}`}
             onClick={() => handleViewSwitch('explore')}
@@ -286,7 +286,7 @@ export default function Skills() {
         ) : (
           <>
             <div className="flex flex-col gap-2">
-              <div className="text-left bg-bg-2 border border-border border-l-[3px] rounded-md px-4 py-3.5 font-inherit text-inherit grid grid-cols-[1fr_auto] gap-1 items-center cursor-default" style={{ borderLeftColor: 'oklch(0.78 0.16 200)' }}>
+              <div className="shadow-box text-left bg-bg-2 border border-border border-l-[3px] rounded-md px-4 py-3.5 font-inherit text-inherit grid grid-cols-[1fr_auto] gap-1 items-center cursor-default" style={{ borderLeftColor: 'oklch(0.78 0.16 200)' }}>
                 <div className="font-mono text-2xs text-fg-4 tracking-[0.05em]">§ telemetry</div>
                 <div className="text-lg font-medium tracking-[-0.01em]" style={{ color: 'oklch(0.78 0.16 200)' }}>Language Activity</div>
               </div>

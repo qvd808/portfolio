@@ -23,19 +23,7 @@ export default function GlitchText({ children, fireImmediately = false }) {
   // Sync with lightning strike
   useEffect(() => strikeBus.on(runGlitch), [runGlitch]);
 
-  // Optional immediate fire + periodic ambient glitch
-  useEffect(() => {
-    let firstTimer;
-    if (fireImmediately) firstTimer = setTimeout(runGlitch, 750);
 
-    let t;
-    const period = () => 2400 + Math.random() * 3000;
-    const startDelay = fireImmediately ? 4200 : period();
-    const schedule = () => { t = setTimeout(() => { runGlitch(); schedule(); }, period()); };
-    const startTimer = setTimeout(schedule, startDelay);
-
-    return () => { clearTimeout(firstTimer); clearTimeout(startTimer); clearTimeout(t); };
-  }, [runGlitch, fireImmediately]);
 
   const STYLES = {
     idle: {},

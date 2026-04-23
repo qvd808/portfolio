@@ -4,7 +4,7 @@ import ShatterImage from './ShatterImage';
 import strikeBus from '../lib/strikeBus';
 import GlitchText from './GlitchText';
 import StrikeUnderline from './StrikeUnderline';
-import InterestOrbit from './InterestOrbit';
+import AdhdPlasma from './AdhdPlasma';
 
 const COMMANDS = [
   { cmd: 'cat /proc/curiosity', out: "whatever's hard this week" },
@@ -138,6 +138,15 @@ function Terminal() {
 export default function Hero() {
   const [shatterState, setShatterState] = useState('INTACT');
 
+  // Master orchestration clock to sync all glitched UI pieces on the hero page perfectly
+  useEffect(() => {
+    let t;
+    const period = () => 2400 + Math.random() * 3000;
+    const schedule = () => { t = setTimeout(() => { strikeBus.fire(); schedule(); }, period()); };
+    const startTimer = setTimeout(schedule, 4200);
+    return () => { clearTimeout(startTimer); clearTimeout(t); };
+  }, []);
+
   return (
     <section className="max-w-page mx-auto px-5 pt-20 pb-10 min-h-[calc(100vh-56px)] flex flex-col justify-center gap-10 relative overflow-hidden" id="hero">
       <HeroLightning />
@@ -163,7 +172,7 @@ export default function Hero() {
             My attention span is a <GlitchText><StrikeUnderline>distributed system.</StrikeUnderline></GlitchText>
           </h1>
 
-          <InterestOrbit />
+          <AdhdPlasma />
 
           <Terminal />
 

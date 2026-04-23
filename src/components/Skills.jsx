@@ -240,7 +240,7 @@ export default function Skills() {
               {CATEGORIES.map((c, i) => (
                 <button
                   key={c.id}
-                  className={`text-left bg-bg-1 border border-border border-l-[3px] rounded-md px-4 py-3.5 cursor-pointer transition-[background,border-color] duration-200 font-inherit text-inherit grid grid-cols-[1fr_auto] gap-1 items-center ${catIdx === i ? 'bg-bg-2 border-border-strong' : 'hover:bg-bg-2 hover:border-border-strong'}`}
+                  className={`shadow-box text-left bg-bg-1 border border-border border-l-[3px] rounded-md px-4 py-3.5 cursor-pointer transition-[background,border-color] duration-200 font-inherit text-inherit grid grid-cols-[1fr_auto] gap-1 items-center ${catIdx === i ? 'bg-bg-2 border-border-strong' : 'hover:bg-bg-2 hover:border-border-strong'}`}
                   onClick={() => setCatIdx(i)}
                   style={{
                     '--cat-hue': c.accent,
@@ -258,7 +258,7 @@ export default function Skills() {
               ))}
             </div>
 
-            <div className="bg-bg-1 border border-border rounded-lg p-5 flex flex-col gap-3">
+            <div className="shadow-box bg-bg-1 border border-border rounded-lg p-5 flex flex-col gap-3">
               <div className="flex justify-between items-end pb-3 border-b border-dashed border-border">
                 <div>
                   <div className="font-mono text-2xs text-fg-4 tracking-[0.05em]">
@@ -299,7 +299,7 @@ export default function Skills() {
                 Newer commits weigh more heavily on the results than legacy code.
               </div>
             </div>
-            <div className="bg-bg-1 border border-border rounded-lg p-0">
+            <div className="shadow-box bg-bg-1 border border-border rounded-lg p-0">
               <LangStats key={statsKey} />
             </div>
           </>

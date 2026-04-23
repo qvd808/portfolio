@@ -139,7 +139,7 @@ function ProjectCard({ repo, badge, badgeStyle }) {
 
   return (
     <a
-      className="group bg-bg-1 border border-border rounded-lg p-5 flex flex-col gap-3.5 transition-[background,border-color,transform] duration-200 cursor-pointer relative will-change-transform hover:border-border-strong hover:bg-bg-2 hover:-translate-y-px"
+      className="project group bg-bg-1 border border-border rounded-lg p-5 flex flex-col gap-3.5 transition-[background,border-color,transform] duration-200 cursor-pointer relative will-change-transform hover:border-border-strong hover:bg-bg-2 hover:-translate-y-px"
       href={repo.html_url}
       target="_blank"
       rel="noreferrer"
@@ -169,7 +169,7 @@ function ProjectCard({ repo, badge, badgeStyle }) {
           </div>
         )}
         <div className="flex flex-wrap gap-1.5">
-          {topics.map(t => <span key={t} className="font-mono text-2xs px-[7px] py-[3px] bg-bg-2 border border-border rounded-sm text-fg-3">{t}</span>)}
+          {topics.map(t => <span key={t} className="shadow-box font-mono text-2xs px-[7px] py-[3px] bg-bg-2 border border-border rounded-sm text-fg-3">{t}</span>)}
         </div>
       </div>
 

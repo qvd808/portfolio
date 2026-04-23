@@ -10,7 +10,7 @@ export default function Contact() {
     <section className="max-w-page mx-auto px-5 py-[calc(80px*var(--density))] [contain:layout_style]" id="contact">
       <div className="section-label font-mono text-xs text-fg-4 tracking-[0.04em] uppercase flex items-center gap-2.5 mb-6">§ contact</div>
 
-      <div className="bg-bg-1 border border-border rounded-xl p-[clamp(24px,4vw,48px)] grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-10">
+      <div className="shadow-box bg-bg-1 border border-border rounded-xl p-[clamp(24px,4vw,48px)] grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-10">
         <div>
           <div className="font-mono text-xs text-fg-4 mb-[18px]">
             <span className="text-accent">●</span> INBOX OPEN
@@ -34,7 +34,7 @@ export default function Contact() {
           <div className="flex flex-col gap-2">
             {endpoints.map(e => (
               <a key={e.path} href={e.href} target="_blank" rel="noreferrer"
-                className="group flex items-center justify-between gap-3.5 p-3.5 bg-bg-2 border border-border rounded-md font-mono text-sm text-fg-2 transition-[background,border-color,color] duration-150 hover:bg-bg-3 hover:border-accent-border hover:text-fg"
+                className="shadow-box group flex items-center justify-between gap-3.5 p-3.5 bg-bg-2 border border-border rounded-md font-mono text-sm text-fg-2 transition-[background,border-color,color] duration-150 hover:bg-bg-3 hover:border-accent-border hover:text-fg"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <span className="text-2xs font-semibold text-accent bg-accent-dim px-[7px] py-[3px] rounded-sm tracking-[0.04em] shrink-0">{e.method}</span>

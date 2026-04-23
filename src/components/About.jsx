@@ -22,7 +22,7 @@ export default function About() {
           </p>
         </div>
 
-        <div className="bg-bg-1 border border-border rounded-lg p-[22px] flex flex-col gap-4">
+        <div className="shadow-box bg-bg-1 border border-border rounded-lg p-[22px] flex flex-col gap-4">
           <div className="pb-3 border-b border-dashed border-border">
             <div className="font-mono text-2xs text-fg-4 tracking-[0.05em]">
               🎯 GOALS · 2026

@@ -15,10 +15,9 @@
   --maxw: 1200px;
 
   /* Atmospheric alley tokens */
-  --alley-grime: 0.55;
   --alley-dust: 1;
   --alley-neon-hue: 20;
-  --alley-neon-strength: 0.5;
+  --alley-neon-strength: 0.7;
   --alley-puddle: 0.18;
   --alley-chroma: 0.6;
   --spot-size: 220px;
@@ -239,37 +238,8 @@ body.spotlight-on .brick-layer {
   opacity: 1;
 }
 
-.grime-layer {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  mix-blend-mode: multiply;
-  opacity: var(--alley-grime);
-  -webkit-mask-image: radial-gradient(circle var(--spot-size) at var(--spot-x) var(--spot-y), black 0%, black 25%, transparent 80%);
-  mask-image: radial-gradient(circle var(--spot-size) at var(--spot-x) var(--spot-y), black 0%, black 25%, transparent 80%);
-}
 
-.dust-layer {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 2;
-  mix-blend-mode: screen;
-  opacity: var(--alley-dust);
-  -webkit-mask-image: radial-gradient(circle calc(var(--spot-size) * 0.9) at var(--spot-x) var(--spot-y), black 0%, black 10%, transparent 75%);
-  mask-image: radial-gradient(circle calc(var(--spot-size) * 0.9) at var(--spot-x) var(--spot-y), black 0%, black 10%, transparent 75%);
-}
 
-.mote {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  border-radius: 50%;
-  background: oklch(0.94 0.04 75 / 0.7);
-  box-shadow: 0 0 3px oklch(0.94 0.04 75 / 0.5);
-  will-change: transform;
-}
 
 .neon-layer {
   position: fixed;
@@ -301,7 +271,6 @@ body.spotlight-on .brick-layer {
 .shadow-transform-layer {
   position: absolute;
   inset: 0;
-  filter: brightness(0) blur(4px);
   transform-origin: var(--spot-x) var(--spot-y);
   transform: scale(1.43);
   will-change: transform;
@@ -313,7 +282,7 @@ body.spotlight-on::after {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 2;
+  z-index: 10;
   background:
     radial-gradient(circle calc(var(--spot-size) + 12px) at calc(var(--spot-x) - 2px) var(--spot-y),
       transparent 0%, transparent 70%,
@@ -329,6 +298,14 @@ body.spotlight-on::after {
       oklch(0.60 0.08 50 / 0.12) 60%,
       transparent 85%);
   mix-blend-mode: screen;
+  animation: dust-flicker 4s infinite alternate ease-in-out;
+}
+
+@keyframes dust-flicker {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  25% { opacity: 0.92; filter: brightness(0.95); }
+  50% { opacity: 0.98; filter: brightness(1.02); }
+  75% { opacity: 0.85; filter: brightness(0.9); }
 }
 
 [data-theme="light"] body.spotlight-on::after {

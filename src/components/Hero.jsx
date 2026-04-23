@@ -114,7 +114,7 @@ function HeroLightning() {
 function Terminal() {
   const { cmd, out, cursor } = useTyping(COMMANDS);
   return (
-    <div className="mt-7 bg-[oklch(0.12_0.008_250)] border border-border-strong rounded-md overflow-hidden font-mono shadow-[0_12px_40px_oklch(0_0_0/0.3)] [html[data-theme=light]_&]:bg-[oklch(0.99_0.01_85)] [html[data-theme=light]_&]:shadow-[0_8px_24px_oklch(0.3_0_0/0.08)]">
+    <div className="shadow-box mt-7 bg-[oklch(0.12_0.008_250)] border border-border-strong rounded-md overflow-hidden font-mono shadow-[0_12px_40px_oklch(0_0_0/0.3)] [html[data-theme=light]_&]:bg-[oklch(0.99_0.01_85)] [html[data-theme=light]_&]:shadow-[0_8px_24px_oklch(0.3_0_0/0.08)]">
       <div className="flex items-center gap-1.5 px-3 py-2 bg-[oklch(0.17_0.008_250)] border-b border-border [html[data-theme=light]_&]:bg-[oklch(0.93_0.015_85)]">
         <span className="w-2.5 h-2.5 rounded-full bg-[oklch(0.65_0.18_25)]" />
         <span className="w-2.5 h-2.5 rounded-full bg-[oklch(0.78_0.14_75)]" />
@@ -172,27 +172,27 @@ export default function Hero() {
           </p>
 
           <div className="flex gap-2.5 mt-7 flex-wrap">
-            <a href="#projects" className="font-mono text-sm px-3.5 py-2.5 rounded border border-accent bg-accent text-[oklch(0.12_0.01_250)] font-semibold cursor-pointer inline-flex items-center gap-2 no-underline hover:brightness-[1.08] transition-[filter] duration-150">
+            <a href="#projects" className="shadow-box font-mono text-sm px-3.5 py-2.5 rounded border border-accent bg-accent text-[oklch(0.12_0.01_250)] font-semibold cursor-pointer inline-flex items-center gap-2 no-underline hover:brightness-[1.08] transition-[filter] duration-150">
               see projects <span className="transition-transform duration-150 group-hover:translate-x-0.5">→</span>
             </a>
-            <a href="https://github.com/qvd808" target="_blank" rel="noreferrer" className="font-mono text-sm px-3.5 py-2.5 rounded border border-border bg-bg-2 text-fg cursor-pointer inline-flex items-center gap-2 no-underline hover:bg-bg-3 hover:border-border-strong transition-[background,border-color] duration-150">
+            <a href="https://github.com/qvd808" target="_blank" rel="noreferrer" className="shadow-box font-mono text-sm px-3.5 py-2.5 rounded border border-border bg-bg-2 text-fg cursor-pointer inline-flex items-center gap-2 no-underline hover:bg-bg-3 hover:border-border-strong transition-[background,border-color] duration-150">
               github ↗
             </a>
-            <a href="https://drive.google.com/file/d/1IM4YwjO-NO8uF1Qor7D95fOap3vGtt5V/view" target="_blank" rel="noreferrer" className="font-mono text-sm px-3.5 py-2.5 rounded border border-border bg-bg-2 text-fg cursor-pointer inline-flex items-center gap-2 no-underline hover:bg-bg-3 hover:border-border-strong transition-[background,border-color] duration-150">
+            <a href="https://drive.google.com/file/d/1IM4YwjO-NO8uF1Qor7D95fOap3vGtt5V/view" target="_blank" rel="noreferrer" className="shadow-box font-mono text-sm px-3.5 py-2.5 rounded border border-border bg-bg-2 text-fg cursor-pointer inline-flex items-center gap-2 no-underline hover:bg-bg-3 hover:border-border-strong transition-[background,border-color] duration-150">
               resume ↗
             </a>
           </div>
         </div>
 
         <div>
-          <div className="relative aspect-[3/4] rounded-lg overflow-hidden border border-border bg-bg-2 mb-4 cursor-crosshair">
+          <div className="shadow-box relative aspect-[3/4] rounded-lg overflow-hidden border border-border bg-bg-2 mb-4 cursor-crosshair">
             <ShatterImage src={headshot} alt="Vinh Dang" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[color-mix(in_oklab,var(--bg)_80%,transparent)] pointer-events-none" style={{ backgroundPosition: '0 40%' }} />
             <div className="absolute bottom-2.5 left-2.5 right-2.5 flex justify-between items-center font-mono text-2xs text-fg">
               <span>vinh.jpeg</span><span className="text-accent">●</span>
             </div>
           </div>
-          <div className="bg-bg-1 border border-border rounded-lg p-4 font-mono text-xs text-fg-3">
+          <div className="shadow-box bg-bg-1 border border-border rounded-lg p-4 font-mono text-xs text-fg-3">
             <div className="flex justify-between items-center pb-3 mb-3 border-b border-border text-fg-4 text-2xs uppercase tracking-[0.05em]">
               <span>NOW</span><span>2026.Q2</span>
             </div>

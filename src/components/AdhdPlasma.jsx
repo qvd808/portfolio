@@ -1,15 +1,29 @@
 import { useEffect, useRef } from 'react';
 import strikeBus from '../lib/strikeBus';
+import useIsMobile from '../hooks/useIsMobile';
 
 // --- 3D Network Data ---
 const nodesData = [
-  { baseX: -320, baseY: -120, baseZ:  60, r: 32, color: "#8b5cf6", name: "RISC-V Core" },
-  { baseX: -150, baseY: -160, baseZ:  40, r: 32, color: "#3b82f6", name: "OS/Kernel" },
-  { baseX:  160, baseY: -150, baseZ:  80, r: 32, color: "#06b6d4", name: "Compilers" },
-  { baseX:  320, baseY: -100, baseZ: 100, r: 32, color: "#f59e0b", name: "FPGAs" },
-  { baseX: -180, baseY:  160, baseZ: 140, r: 32, color: "#10b981", name: "AI Agents" },
-  { baseX:  180, baseY:  150, baseZ: 120, r: 32, color: "#ef4444", name: "PCBs" }
+  { baseX: -320, baseY: -120, baseZ: 60, r: 32, color: "#8b5cf6", name: "RISC-V Core" },
+  { baseX: -150, baseY: -160, baseZ: 40, r: 32, color: "#3b82f6", name: "OS/Kernel" },
+  { baseX: 160, baseY: -150, baseZ: 80, r: 32, color: "#06b6d4", name: "Compilers" },
+  { baseX: 320, baseY: -100, baseZ: 100, r: 32, color: "#f59e0b", name: "FPGAs" },
+  { baseX: -180, baseY: 160, baseZ: 140, r: 32, color: "#10b981", name: "AI Agents" },
+  { baseX: 180, baseY: 150, baseZ: 120, r: 32, color: "#ef4444", name: "PCBs" }
 ];
+
+// Add huge array of distant random background spheres that don't connect
+const dustNodes = Array.from({ length: 45 }).map(() => ({
+  baseX: (Math.random() - 0.5) * 1400,
+  baseY: (Math.random() - 0.5) * 800,
+  baseZ: 300 + Math.random() * 1000,
+  r: 4 + Math.random() * 10,
+  color: "#1e293b",
+  name: "",
+  isDust: true
+}));
+
+const allNodesData = [...nodesData, ...dustNodes];
 
 function hexToRgb(hex) {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -20,6 +34,9 @@ function hexToRgb(hex) {
 
 export default function AdhdPlasma() {
   const canvasRef = useRef(null);
+  const isMobile = useIsMobile();
+  const isMobileRef = useRef(isMobile);
+  useEffect(() => { isMobileRef.current = isMobile; }, [isMobile]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -30,7 +47,7 @@ export default function AdhdPlasma() {
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * window.devicePixelRatio;
     canvas.height = 280 * window.devicePixelRatio;
-    
+
     // Scale all operations down to the CSS size to easily support retina displays
     const SCALE = window.devicePixelRatio;
 
@@ -39,11 +56,11 @@ export default function AdhdPlasma() {
     const CX = () => W() / 2;
     const CY = () => H() / 2;
 
-    const nodes3D = nodesData.map(n => ({ ...n, x: n.baseX, y: n.baseY, z: n.baseZ, currentR: n.r }));
+    const nodes3D = allNodesData.map(n => ({ ...n, x: n.baseX, y: n.baseY, z: n.baseZ, currentR: n.r }));
 
     let activeSphere = 0;
     let switchFlash = 0;
-    
+
     // Instead of free-running asynchronously, we strictly sync our attention shifts 
     // to the master glitch bus orchestration!
     const unbus = strikeBus.on(() => {
@@ -94,7 +111,7 @@ export default function AdhdPlasma() {
       const node = nodes3D[sphereIdx];
       const r = node.currentR * SCALE;
       const mainPts = generateFilamentBranch(r, 0, 0, 0, 0, 10 + Math.floor(Math.random() * 5));
-      
+
       const forks = [];
       const numForks = Math.floor(Math.random() * 2);
       for (let f = 0; f < numForks; f++) {
@@ -128,8 +145,8 @@ export default function AdhdPlasma() {
         // Unscale coordinates back before projecting, since project3D inherently handles SCALE mappings.
         // Wait, the radius passed to generateFilamentBranch already included SCALE.
         // We need to pass raw scaled offsets into project3D.
-        const proj = pts.map(pt => project3D(node.x + pt.x/SCALE, node.y + pt.y/SCALE, node.z + pt.z/SCALE));
-        
+        const proj = pts.map(pt => project3D(node.x + pt.x / SCALE, node.y + pt.y / SCALE, node.z + pt.z / SCALE));
+
         // Outer glow
         ctx.beginPath();
         ctx.moveTo(proj[0].x, proj[0].y);
@@ -204,11 +221,11 @@ export default function AdhdPlasma() {
       // 1. Compute Eased Positions
       nodes3D.forEach((n, i) => {
         const isActive = (i === activeSphere);
-        const targetX = isActive ? 0 : n.baseX; 
-        const targetY = isActive ? 0 : n.baseY; 
-        const targetZ = isActive ? -20 : n.baseZ + 80; // Keep background closer to avoid perspective pinch
+        const targetX = isActive ? 0 : n.baseX;
+        const targetY = isActive ? 0 : n.baseY;
+        const targetZ = isActive ? -20 : (n.isDust ? n.baseZ : n.baseZ + 80);
         const targetR = isActive ? n.r * 1.25 : n.r * 0.6; // Don't let active sphere get overwhelmingly huge
-        
+
         const speed = isActive ? 0.22 : 0.04;
         n.x += (targetX - n.x) * speed;
         n.y += (targetY - n.y) * speed;
@@ -216,15 +233,15 @@ export default function AdhdPlasma() {
         n.currentR += (targetR - n.currentR) * 0.08;
       });
 
-      // 2. Draw Neural Interconnections
-      for (let i = 0; i < nodes3D.length; i++) {
-        for (let j = i + 1; j < nodes3D.length; j++) {
+      // 2. Draw Neural Interconnections (Only connect the 6 main nodes!)
+      for (let i = 0; i < nodesData.length; i++) {
+        for (let j = i + 1; j < nodesData.length; j++) {
           const p1 = project3D(nodes3D[i].x, nodes3D[i].y, nodes3D[i].z);
           const p2 = project3D(nodes3D[j].x, nodes3D[j].y, nodes3D[j].z);
           const midX = (p1.x + p2.x) / 2 + (i - j) * 20 * p1.scale * SCALE;
           const midY = (p1.y + p2.y) / 2 - 40 * p1.scale * SCALE;
           const isActiveLink = (i === activeSphere || j === activeSphere);
-          
+
           ctx.lineWidth = (isActiveLink ? 1.5 : 1) * SCALE;
           ctx.strokeStyle = isActiveLink ? "rgba(120, 160, 255, 0.15)" : "rgba(80, 90, 110, 0.05)";
           ctx.beginPath();
@@ -234,8 +251,8 @@ export default function AdhdPlasma() {
 
           // Data Pulses
           const progress = (time * 0.0004 + i * 0.2 + j * 0.5) % 1;
-          const pulseX = Math.pow(1-progress, 2)*p1.x + 2*(1-progress)*progress*midX + Math.pow(progress, 2)*p2.x;
-          const pulseY = Math.pow(1-progress, 2)*p1.y + 2*(1-progress)*progress*midY + Math.pow(progress, 2)*p2.y;
+          const pulseX = Math.pow(1 - progress, 2) * p1.x + 2 * (1 - progress) * progress * midX + Math.pow(progress, 2) * p2.x;
+          const pulseY = Math.pow(1 - progress, 2) * p1.y + 2 * (1 - progress) * progress * midY + Math.pow(progress, 2) * p2.y;
           const pulseSize = (isActiveLink ? 2 : 0.8) * p1.scale * SCALE;
           ctx.fillStyle = isActiveLink ? "rgba(120, 200, 255, 0.6)" : "rgba(80, 80, 120, 0.2)";
           ctx.beginPath();
@@ -245,7 +262,7 @@ export default function AdhdPlasma() {
       }
 
       // 3. Draw Nodes Painter's Algorithm (Back to Front)
-      const sortedNodes = nodes3D.map((n, i) => ({...n, i})).sort((a, b) => b.z - a.z);
+      const sortedNodes = nodes3D.map((n, i) => ({ ...n, i })).sort((a, b) => b.z - a.z);
 
       sortedNodes.forEach(node => {
         const isActive = (node.i === activeSphere);
@@ -254,30 +271,40 @@ export default function AdhdPlasma() {
 
         let drawRadius = radius;
         if (isActive && switchFlash > 0.01) {
-            drawRadius = radius * (1 + switchFlash * 0.12);
+          drawRadius = radius * (1 + switchFlash * 0.12);
         }
 
-        if (!isActive) {
-          // Dull background node
+        if (node.isDust) {
+          // Render as bright distant stars catching the viewport light
           ctx.beginPath();
-          ctx.arc(p.x, p.y, drawRadius, 0, Math.PI * 2);
-          const grad = ctx.createRadialGradient(p.x - drawRadius*0.3, p.y - drawRadius*0.3, drawRadius*0.1, p.x, p.y, drawRadius);
-          grad.addColorStop(0, "#1e293b");
-          grad.addColorStop(0.6, "#0f172a");
-          grad.addColorStop(1, "#020617");
-          ctx.fillStyle = grad;
+          ctx.arc(p.x, p.y, drawRadius * 0.7, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(180, 210, 255, ${0.1 + p.scale * 1.8})`;
+          ctx.shadowBlur = 6 * p.scale * SCALE;
+          ctx.shadowColor = "rgba(160, 210, 255, 0.5)";
           ctx.fill();
-          ctx.strokeStyle = "rgba(255,255,255,0.06)";
-          ctx.lineWidth = 1 * SCALE;
-          ctx.stroke();
-        } else {
-          // Glowing active glass globe (Removed faux specular highlight that looked like a trapped white moon)
+          ctx.shadowBlur = 0;
+        } else if (!isActive) {
+          // Dull background node hit by strong viewport flashlight
           ctx.beginPath();
           ctx.arc(p.x, p.y, drawRadius, 0, Math.PI * 2);
           const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, drawRadius);
-          grad.addColorStop(0, `rgba(${hexToRgb(node.color).str}, 0.25)`);
-          grad.addColorStop(0.5, "rgba(20, 20, 30, 0.6)");
-          grad.addColorStop(1, "rgba(10, 10, 25, 0.2)");
+          grad.addColorStop(0, "rgba(140, 160, 200, 0.95)"); // Intense front catch-light
+          grad.addColorStop(0.5, "rgba(40, 50, 80, 0.95)");
+          grad.addColorStop(1, "rgba(5, 10, 20, 1)"); // Deep falloff shadow on edges
+          ctx.fillStyle = grad;
+          ctx.fill();
+          ctx.strokeStyle = "rgba(255,255,255,0.15)";
+          ctx.lineWidth = 1 * SCALE;
+          ctx.stroke();
+        } else {
+          // Glowing active glass globe hit by strong viewport flashlight
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, drawRadius, 0, Math.PI * 2);
+          const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, drawRadius);
+          grad.addColorStop(0, "rgba(255, 255, 255, 0.35)"); // Intense Front bounce reflection
+          grad.addColorStop(0.25, `rgba(${hexToRgb(node.color).str}, 0.5)`);
+          grad.addColorStop(0.7, "rgba(20, 20, 30, 0.7)");
+          grad.addColorStop(1, "rgba(10, 10, 25, 0.3)");
           ctx.fillStyle = grad;
           ctx.fill();
 
@@ -299,11 +326,13 @@ export default function AdhdPlasma() {
         }
 
         // Draw Labels
-        const labelAlpha = isActive ? 1 : Math.min(1, Math.max(0.1, p.scale * 1.5));
-        ctx.fillStyle = isActive ? "var(--fg)" : `rgba(120, 130, 150, ${labelAlpha})`;
-        ctx.font = `${isActive ? 'bold ' : ''}${Math.max(10, 12 * p.scale * SCALE)}px 'JetBrains Mono', monospace`;
-        ctx.textAlign = "center";
-        ctx.fillText(node.name, p.x, p.y - drawRadius - (14 * p.scale * SCALE));
+        if (!node.isDust) {
+          const labelAlpha = isActive ? 1 : Math.min(1, Math.max(0.1, p.scale * 1.5));
+          ctx.fillStyle = isActive ? "var(--fg)" : `rgba(120, 130, 150, ${labelAlpha})`;
+          ctx.font = `${isActive ? 'bold ' : ''}${Math.max(10, 12 * p.scale * SCALE)}px 'JetBrains Mono', monospace`;
+          ctx.textAlign = "center";
+          ctx.fillText(node.name, p.x, p.y - drawRadius - (14 * p.scale * SCALE));
+        }
       });
 
       // 4. White Flash across whole layer when attention brutally shifts
@@ -321,17 +350,17 @@ export default function AdhdPlasma() {
           plasmaBolts.splice(i, 1);
         }
       }
-      
+
       const activeCount = plasmaBolts.filter(b => b.sphere === activeSphere).length;
-      if (activeCount < MAX_BOLTS && Math.random() < 0.12) {
+      if (!isMobileRef.current && activeCount < MAX_BOLTS && Math.random() < 0.015) { // Ultra-low deliberate strikes
         spawnPlasmaBolt(activeSphere);
       }
-      
+
       plasmaBolts.forEach(b => drawPlasmaBolt(b, time));
 
       raf = requestAnimationFrame(loop);
     }
-    
+
     raf = requestAnimationFrame(loop);
 
     const onResize = () => {
@@ -354,9 +383,11 @@ export default function AdhdPlasma() {
     <div style={{ margin: '32px 0 24px 0', width: '100%', maxWidth: 640 }}>
       {/* Background trick to blend over perfectly */}
       <div className="shadow-box border border-border-strong rounded-lg overflow-hidden bg-[oklch(0.12_0.008_250)]">
-        <canvas 
-          ref={canvasRef} 
-          style={{ width: '100%', height: 280, display: 'block', touchAction: 'none' }} 
+        <canvas
+          ref={canvasRef}
+          style={{ width: '100%', height: 280, display: 'block', touchAction: 'none' }}
+          role="img"
+          aria-label="3D rendering of interconnected computational nodes simulating an erratic, distributed attention span"
         />
       </div>
       <div className="font-mono flex justify-between" style={{ fontSize: 11, color: 'var(--fg-4)', marginTop: 8, letterSpacing: '.04em' }}>

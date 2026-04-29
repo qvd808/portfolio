@@ -51,6 +51,12 @@ export default function AdhdPlasma() {
     // Scale all operations down to the CSS size to easily support retina displays
     const SCALE = window.devicePixelRatio;
 
+    // Resolve CSS custom properties to canvas-usable colors ONCE at mount.
+    // Canvas does NOT understand `var(--fg)`; without this, fillText silently
+    // falls through to the previous fillStyle.
+    const cssFg = getComputedStyle(document.documentElement)
+      .getPropertyValue('--fg').trim() || '#e8eaed';
+
     const W = () => canvas.width;
     const H = () => canvas.height;
     const CX = () => W() / 2;
@@ -328,7 +334,7 @@ export default function AdhdPlasma() {
         // Draw Labels
         if (!node.isDust) {
           const labelAlpha = isActive ? 1 : Math.min(1, Math.max(0.1, p.scale * 1.5));
-          ctx.fillStyle = isActive ? "var(--fg)" : `rgba(120, 130, 150, ${labelAlpha})`;
+          ctx.fillStyle = isActive ? cssFg : `rgba(120, 130, 150, ${labelAlpha})`;
           ctx.font = `${isActive ? 'bold ' : ''}${Math.max(10, 12 * p.scale * SCALE)}px 'JetBrains Mono', monospace`;
           ctx.textAlign = "center";
           ctx.fillText(node.name, p.x, p.y - drawRadius - (14 * p.scale * SCALE));

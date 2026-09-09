@@ -168,7 +168,6 @@ export default function Atmosphere({
   }, []);
   return (
     <div ref={providerRef} style={{ display: 'contents' }}>
-      <div className="spotlight-bloom" />
       <div className="neon-layer" />
       <div className="brick-layer" />
       <ShadowSystem selectors={selectors} />

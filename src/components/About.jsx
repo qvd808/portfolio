@@ -9,13 +9,13 @@ export default function About() {
       <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr] gap-10 md:gap-[60px] mt-10">
         <div className="text-xl text-fg-2" style={{ textWrap: 'pretty' }}>
           <p className="mb-[18px] text-2xl text-fg">
-            I'm Vinh. Fresh grad out of SFU. Mostly interested in low-level programming and C these days — the kind of stuff that either works or doesn't, no middle ground.
+            I'm Vinh, a firmware developer finishing a Computing Science degree at SFU. I specialize in embedded systems — ARM Cortex-M microcontrollers, FreeRTOS, SPI and I2C — and spend a lot of time reading hardware reference manuals.
           </p>
           <p className="mb-[18px]">
-            My path has been a bit of a tour: React/React Native for web and mobile, then some firmware work, then a detour through GPU computing, and now I keep finding myself gravitating back to the <span className="text-fg font-medium">metal</span>. Turns out the deeper I go, the more fun it gets.
+            I came to firmware from an application-software background, which is probably why I build the test harness before the feature. At Schneider Electric I built a time-synchronisation system that kept clocks aligned within a millisecond across devices, and a containerised test rig that proved it.
           </p>
           <p className="mb-[18px]">
-            I think the best engineers are the ones who are genuinely curious about what's happening under the abstraction. I try to be that kind of engineer.
+            On the side I write Python and PyTorch — mostly reinforcement learning and multi-agent systems — and I'm increasingly interested in verifying what those systems produce, the same way I'd verify a chip.
           </p>
           <p className="text-fg-3 text-lg italic">
             "<span className="font-serif italic tracking-[-0.01em]">With great power comes great responsibility</span>" — a belief that guides my coding philosophy and, honestly, most of my decisions.

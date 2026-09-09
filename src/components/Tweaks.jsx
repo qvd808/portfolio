@@ -15,11 +15,8 @@ export function useTweaks() {
     } catch { return TWEAK_DEFAULTS; }
   });
 
+  // Nocturne is a single dark palette, so nothing here repaints the theme.
   useEffect(() => {
-    const root = document.documentElement;
-    root.setAttribute('data-theme', state.theme);
-    root.style.setProperty('--accent-h', state.accentHue);
-    root.style.setProperty('--density', state.density);
     localStorage.setItem('tweaks', JSON.stringify(state));
   }, [state]);
 

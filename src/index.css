@@ -2,68 +2,111 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== Design tokens (CSS custom properties) ===== */
+/* ═══════════════════════════════════════════════════════════════════════════
+   Nocturne — design-system tokens. Deep indigo ground, blurple accent.
+   ═══════════════════════════════════════════════════════════════════════ */
 :root {
-  --accent-h: 130;
-  --accent-c: 0.18;
-  --accent-l: 0.82;
-  --accent: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
-  --accent-dim: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.15);
-  --accent-border: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.35);
+  --color-bg: #161826;
+  --color-surface: #232532;
+  --color-text: #e9e9ed;
+  --color-accent: #9184d9;
+  --color-accent-2: #a7a1db;
+  --color-divider: color-mix(in srgb, #e9e9ed 16%, transparent);
 
-  --density: 1;
-  --maxw: 1200px;
+  /* Tonal ramps — one shared lightness scale in OKLCH, so the same step of
+     any role matches the others in visual value. */
+  --color-neutral-100: #f3f5fe;
+  --color-neutral-200: #e4e7f5;
+  --color-neutral-300: #cfd3e5;
+  --color-neutral-400: #b2b6ca;
+  --color-neutral-500: #9397ab;
+  --color-neutral-600: #75798c;
+  --color-neutral-700: #595d6c;
+  --color-neutral-800: #3f424d;
+  --color-neutral-900: #292b31;
 
-  /* Atmospheric alley tokens */
-  --alley-dust: 1;
-  --alley-neon-hue: 20;
+  --color-accent-100: #f5f4ff;
+  --color-accent-200: #e7e5fe;
+  --color-accent-300: #d2cefd;
+  --color-accent-400: #b5abfc;
+  --color-accent-500: #968ae0;
+  --color-accent-600: #796cbf;
+  --color-accent-700: #5d5294;
+  --color-accent-800: #423a6a;
+  --color-accent-900: #2b2741;
+
+  --color-accent-2-100: #f5f4ff;
+  --color-accent-2-200: #e7e5fe;
+  --color-accent-2-300: #d2cefd;
+  --color-accent-2-400: #b5afe8;
+  --color-accent-2-500: #9690c9;
+  --color-accent-2-600: #7972a9;
+  --color-accent-2-700: #5c5783;
+  --color-accent-2-800: #423e5d;
+  --color-accent-2-900: #2b293a;
+
+  /* Saturated deep-indigo section grounds. Deck-scale fills, not interface colors. */
+  --color-section: #262a60;
+  --color-section-glow: #353b80;
+  --color-section-ghost: #4c5397;
+
+  --font-heading: 'Inter', system-ui, sans-serif;
+  --font-heading-weight: 500;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --space-1: 2.8px;
+  --space-2: 5.6px;
+  --space-3: 8.4px;
+  --space-4: 11.2px;
+  --space-6: 16.8px;
+  --space-8: 22.4px;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+
+  /* Elevation — a hairline edge plus ambient darkness on a dark ground. */
+  --shadow-sm: 0 0 0 1px #3f424d;
+  --shadow-md: 0 0 0 1px #595d6c, 0 6px 18px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 0 0 1px #9397ab, 0 16px 40px rgba(0, 0, 0, 0.65);
+
+  /* ── Legacy aliases: keep the Tailwind color scale pointed at Nocturne ── */
+  --bg: var(--color-bg);
+  --bg-1: var(--color-surface);
+  --bg-2: var(--color-surface);
+  --bg-3: var(--color-neutral-900);
+  --fg: var(--color-text);
+  --fg-2: var(--color-neutral-300);
+  --fg-3: var(--color-neutral-400);
+  --fg-4: var(--color-neutral-600);
+  --accent: var(--color-accent);
+  --accent-dim: color-mix(in srgb, var(--color-accent) 15%, transparent);
+  --accent-border: color-mix(in srgb, var(--color-accent) 35%, transparent);
+  --border: var(--color-divider);
+  --border-strong: var(--color-neutral-700);
+  --danger: #e06c75;
+  --warn: #e5c07b;
+
+  --maxw: 1120px;
+
+  /* Atmospheric alley tokens — retuned to the blurple hue */
+  --alley-neon-hue: 300;
   --alley-neon-strength: 0.7;
-  --alley-puddle: 0.18;
-  --alley-chroma: 0.6;
   --spot-size: 220px;
 }
 
-/* Dark theme (default) */
-:root,
-[data-theme="dark"] {
-  --bg: oklch(0.16 0.008 250);
-  --bg-1: oklch(0.19 0.01 250);
-  --bg-2: oklch(0.22 0.012 250);
-  --bg-3: oklch(0.26 0.014 250);
-  --fg: oklch(0.96 0.005 250);
-  --fg-2: oklch(0.78 0.008 250);
-  --fg-3: oklch(0.58 0.01 250);
-  --fg-4: oklch(0.42 0.012 250);
-  --border: oklch(0.3 0.012 250);
-  --border-strong: oklch(0.42 0.015 250);
-  --danger: oklch(0.72 0.18 25);
-  --warn: oklch(0.82 0.14 75);
-  --shadow: 0 1px 0 oklch(1 0 0 / 0.03) inset;
-}
-
-/* Light theme — cream */
-[data-theme="light"] {
-  --bg: oklch(0.97 0.015 85);
-  --bg-1: oklch(0.945 0.018 85);
-  --bg-2: oklch(0.92 0.02 85);
-  --bg-3: oklch(0.89 0.022 85);
-  --fg: oklch(0.2 0.015 85);
-  --fg-2: oklch(0.38 0.015 85);
-  --fg-3: oklch(0.55 0.018 85);
-  --fg-4: oklch(0.68 0.018 85);
-  --border: oklch(0.82 0.02 85);
-  --border-strong: oklch(0.7 0.02 85);
-  --accent-l: 0.58;
-  --accent-c: 0.16;
-  --danger: oklch(0.55 0.2 25);
-  --warn: oklch(0.68 0.15 75);
-  --shadow: 0 1px 0 oklch(1 0 0 / 0.6) inset;
-}
-
-/* ===== Base layer resets ===== */
+/* ═══════════════════════════════════════════════════════════════════════════
+   Base
+   ═══════════════════════════════════════════════════════════════════════ */
 @layer base {
-  * {
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
+  }
+
+  * {
     margin: 0;
     padding: 0;
   }
@@ -85,125 +128,184 @@
     }
   }
 
-  html, body {
-    background: var(--bg);
-    color: var(--fg);
+  html,
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
   }
 
   body {
-    font-family: 'Inter', -apple-system, system-ui, sans-serif;
-    font-feature-settings: 'ss01', 'cv11';
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
-    line-height: 1.5;
     min-height: 100vh;
-    transition: background 0.3s ease, color 0.3s ease;
     --spot-x: 50vw;
     --spot-y: 50vh;
   }
 
-  ::selection {
-    background: var(--accent);
-    color: oklch(0.12 0.01 250);
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: var(--font-heading-weight);
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+    margin: 0 0 var(--space-2);
   }
+  h1 { font-size: 42px; }
+  h2 { font-size: 32px; }
+  h3 { font-size: 25px; }
+  h4 { font-size: 20px; }
+  h5 { font-size: 16px; }
+  h6 {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  p { margin: 0 0 var(--space-3); }
 
   a {
-    color: inherit;
+    color: var(--color-accent);
     text-decoration: none;
+    text-underline-offset: 3px;
+  }
+  a:hover { color: var(--color-accent-300); }
+
+  img { display: block; max-width: 100%; }
+  figure { margin: 0; }
+
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 30%, transparent);
   }
 }
 
-/* ===== Component layer — things Tailwind can't do ===== */
-@layer components {
-  /* Section heading underline accent */
-  .accent-underline {
-    background-image: linear-gradient(to top, var(--accent) 0.1em, transparent 0.1em);
-    background-repeat: no-repeat;
-    background-size: var(--ul-progress, 100%) 100%;
-    padding: 0 0.05em;
-    transition: background-size .35s cubic-bezier(.2, .8, .2, 1);
-  }
+/* ═══════════════════════════════════════════════════════════════════════════
+   Components — plain CSS built from the tokens above.
+   ═══════════════════════════════════════════════════════════════════════ */
+.text-muted { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
 
-  /* Accent-colored text chip */
-  .accent-text {
-    color: var(--accent);
-    font-weight: 500;
-    background: var(--accent-dim);
-    padding: 1px 6px;
-    border-radius: 3px;
-  }
+.lighten { mix-blend-mode: lighten; background-color: transparent; }
 
-  /* Section label decorative line */
-  .section-label::before {
-    content: '';
-    width: 24px;
-    height: 1px;
-    background: var(--border-strong);
-  }
+/* — rules — Rules fade to transparent at both ends instead of stopping
+   cleanly: a Nocturne signature. The ramp is 48px an end. */
+.hr {
+  height: 1px;
+  border: 0;
+  margin: var(--space-4) 0;
+  background: linear-gradient(to right,
+    transparent, var(--color-divider) 48px,
+    var(--color-divider) calc(100% - 48px), transparent);
+}
 
-  /* Section title responsive sizing */
-  .section-title {
-    font-size: clamp(28px, 3.2vw, 42px);
-  }
+/* — buttons — */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid transparent;
+  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  border-radius: var(--radius-md);
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.btn svg { display: block; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary { color: var(--color-accent); border-color: var(--color-accent); }
+.btn-primary:hover { background: color-mix(in srgb, var(--color-accent) 12%, transparent); color: var(--color-accent); }
+.btn-primary:active { background: color-mix(in srgb, var(--color-accent) 22%, transparent); }
+.btn-secondary { border-color: var(--color-divider); }
+.btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); color: var(--color-text); }
+.btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+.btn-ghost { color: var(--color-accent); padding-inline: var(--space-1); }
+.btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+.btn-ghost:active { background: color-mix(in srgb, var(--color-accent) 18%, transparent); }
 
-  /* Hero heading responsive sizing */
-  .hero-heading {
-    font-size: clamp(40px, 6vw, 80px);
-  }
+/* — cards — */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.card-kicker {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+.elev-sm { box-shadow: var(--shadow-sm); }
+.elev-md { box-shadow: var(--shadow-md); }
+.elev-lg { box-shadow: var(--shadow-lg); }
 
-  /* Contact title responsive sizing */
-  .contact-title {
-    font-size: clamp(28px, 4vw, 44px);
-  }
+/* — tags — */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  padding: 3px 10px;
+  border-radius: calc(var(--radius-md) * 0.75);
+}
+.tag-accent { background: var(--color-accent-800); color: var(--color-accent-100); }
+.tag-accent-2 { background: var(--color-accent-2-800); color: var(--color-accent-2-100); }
+.tag-neutral { background: var(--color-neutral-800); color: var(--color-neutral-100); }
+.tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent); }
 
-  /* Rowline utility (label with extending line) */
-  .rowline::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+/* — navigation — */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+}
+.nav-brand {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 18px;
+  margin-right: auto;
+}
+.nav a { color: inherit; text-decoration: none; font-size: 14px; }
+.nav a:hover, .nav a[aria-current='page'] { color: var(--color-accent); }
 
-  /* Range input styling */
-  input[type="range"] {
-    -webkit-appearance: none;
-    background: transparent;
-    cursor: pointer;
-    width: 100%;
-  }
-  input[type="range"]::-webkit-slider-runnable-track {
-    height: 4px;
-    background: var(--bg-3);
-    border-radius: 2px;
-  }
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    background: var(--accent);
-    margin-top: -5px;
-    border: 2px solid var(--bg-1);
-  }
-  input[type="range"]::-moz-range-track {
-    height: 4px;
-    background: var(--bg-3);
-    border-radius: 2px;
-  }
-  input[type="range"]::-moz-range-thumb {
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    background: var(--accent);
-    border: 2px solid var(--bg-1);
-  }
+/* — endpoint rows — */
+.endpoint:hover {
+  border-color: var(--color-accent) !important;
+  color: var(--color-text) !important;
+}
 
-  /* Lang bar fill transition */
-  .lang-bar-fill {
-    transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+/* — Nocturne motion — */
+@keyframes noct-pulse { 0%, 100% { opacity: 1 } 50% { opacity: .3 } }
+@keyframes noct-blink { 0%, 49% { opacity: 1 } 50%, 100% { opacity: 0 } }
+@keyframes noct-scan { 0% { transform: translateY(-100%) } 100% { transform: translateY(400%) } }
+
+/* Two-column blocks collapse on narrow viewports */
+@media (max-width: 820px) {
+  [data-2col] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: var(--space-8) !important;
   }
 }
 
-/* ===== Spotlight / flashlight system ===== */
+/* ═══════════════════════════════════════════════════════════════════════════
+   Spotlight / flashlight system — the brick alley, in indigo and blurple
+   ═══════════════════════════════════════════════════════════════════════ */
 .brick-layer {
   position: fixed;
   inset: 0;
@@ -211,13 +313,13 @@
   z-index: 1;
   opacity: 0;
   transition: opacity .3s;
-  background-color: oklch(0.22 0.015 30);
+  background-color: #1b1d31;
   background-image:
-    linear-gradient(oklch(0.32 0.07 30 / 0.75) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.32 0.07 30 / 0.75) 1px, transparent 1px),
-    linear-gradient(oklch(0.30 0.06 25 / 0.35) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.30 0.06 25 / 0.35) 1px, transparent 1px),
-    radial-gradient(oklch(0.18 0.02 30 / 0.4) 1px, transparent 1.5px);
+    linear-gradient(rgba(145, 132, 217, 0.26) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(145, 132, 217, 0.26) 1px, transparent 1px),
+    linear-gradient(rgba(118, 108, 191, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(118, 108, 191, 0.14) 1px, transparent 1px),
+    radial-gradient(rgba(11, 12, 24, 0.45) 1px, transparent 1.5px);
   background-size: 86px 42px, 86px 42px, 64px 38px, 64px 38px, 8px 8px;
   background-position: 0 0, 0 0, 43px 21px, 43px 21px, 0 0;
   -webkit-mask-image: radial-gradient(circle var(--spot-size) at var(--spot-x) var(--spot-y), black 0%, black 30%, transparent 85%);
@@ -225,21 +327,7 @@
   will-change: mask-image;
 }
 
-[data-theme="light"] .brick-layer {
-  background-color: oklch(0.92 0.02 85);
-  background-image:
-    linear-gradient(oklch(0.55 0.05 50 / 0.55) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.55 0.05 50 / 0.55) 1px, transparent 1px),
-    linear-gradient(oklch(0.55 0.05 50 / 0.18) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.55 0.05 50 / 0.18) 1px, transparent 1px);
-}
-
-body.spotlight-on .brick-layer {
-  opacity: 1;
-}
-
-
-
+body.spotlight-on .brick-layer { opacity: 1; }
 
 .neon-layer {
   position: fixed;
@@ -247,8 +335,8 @@ body.spotlight-on .brick-layer {
   pointer-events: none;
   z-index: 1;
   background: radial-gradient(circle 340px at 92% 12%,
-    oklch(0.72 0.22 var(--alley-neon-hue) / calc(0.35 * var(--alley-neon-strength))) 0%,
-    oklch(0.60 0.18 var(--alley-neon-hue) / calc(0.15 * var(--alley-neon-strength))) 40%,
+    oklch(0.66 0.16 var(--alley-neon-hue) / calc(0.32 * var(--alley-neon-strength))) 0%,
+    oklch(0.55 0.13 var(--alley-neon-hue) / calc(0.14 * var(--alley-neon-strength))) 40%,
     transparent 75%);
   mix-blend-mode: screen;
 }
@@ -264,61 +352,12 @@ body.spotlight-on .brick-layer {
   contain: strict;
 }
 
-[data-theme="light"] .shadow-mask-layer {
-  opacity: 0.15;
-}
-
 .shadow-transform-layer {
   position: absolute;
   inset: 0;
   transform-origin: var(--spot-x) var(--spot-y);
   transform: scale(1.43);
   will-change: transform;
-}
-
-/* Warm flashlight bloom + chromatic edge */
-.spotlight-bloom {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 10;
-  background:
-    radial-gradient(circle calc(var(--spot-size) + 12px) at calc(var(--spot-x) - 2px) var(--spot-y),
-      transparent 0%, transparent 70%,
-      oklch(0.70 0.22 25 / calc(0.25 * var(--alley-chroma))) 82%,
-      transparent 92%),
-    radial-gradient(circle calc(var(--spot-size) + 12px) at calc(var(--spot-x) + 2px) var(--spot-y),
-      transparent 0%, transparent 70%,
-      oklch(0.75 0.18 220 / calc(0.22 * var(--alley-chroma))) 82%,
-      transparent 92%),
-    radial-gradient(circle 100px at var(--spot-x) var(--spot-y),
-      oklch(0.94 0.06 75 / 0.42) 0%,
-      oklch(0.78 0.10 60 / 0.26) 30%,
-      oklch(0.60 0.08 50 / 0.12) 60%,
-      transparent 85%);
-  mix-blend-mode: screen;
-  animation: dust-flicker 4s infinite alternate ease-in-out;
-}
-
-@keyframes dust-flicker {
-  0%, 100% { opacity: 1; filter: brightness(1); }
-  25% { opacity: 0.92; filter: brightness(0.95); }
-  50% { opacity: 0.98; filter: brightness(1.02); }
-  75% { opacity: 0.85; filter: brightness(0.9); }
-}
-
-[data-theme="light"] .spotlight-bloom {
-  mix-blend-mode: overlay;
-  background: radial-gradient(circle 100px at var(--spot-x) var(--spot-y),
-    oklch(0.96 0.05 70 / 0.5) 0%,
-    oklch(0.80 0.08 60 / 0.3) 40%,
-    transparent 80%);
-}
-
-@media (pointer: coarse) {
-  .spotlight-bloom {
-    display: none;
-  }
 }
 
 /* ===== Glitch intro splash ===== */

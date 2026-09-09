@@ -1,0 +1,179 @@
+diff --git a/src/components/Hero.jsx b/src/components/Hero.jsx
+index 71d4bff..a1b2c3d 100644
+--- a/src/components/Hero.jsx
++++ b/src/components/Hero.jsx
+@@ -8,10 +8,11 @@ import AdhdPlasma from './AdhdPlasma';
+ 
+ const COMMANDS = [
+-  { cmd: 'cat /proc/curiosity', out: "whatever's hard this week" },
+-  { cmd: 'grep today focus.log', out: 'RISC-V CPU on Altera · learning Zig' },
+-  { cmd: 'cat process.sh', out: 'find hard thing → spend the day on it → repeat' },
+-  { cmd: 'which editor', out: '/usr/bin/nvim  # obviously' },
++  { cmd: 'chronyc tracking | grep -i skew', out: 'held under one millisecond across concurrent embedded targets' },
++  { cmd: 'git log --oneline esp-idf | grep XPT2046', out: 'SPI touchscreen driver, merged upstream into espressif/esp-idf' },
++  { cmd: 'ctest --output-on-failure -R mahony', out: 'sensor fusion, tested on the host. no robot required.' },
++  { cmd: 'arm-none-eabi-gdb build/firmware.elf', out: 'no vendor HAL: startup code, linker script, vector table, mine' },
++  { cmd: 'dafny verify factor.dfy', out: 'the habit that took me from verifying a CPU to verifying AI output' },
+ ];
+ 
+ function useTyping(items, pauseMs = 2600, typeMs = 42) {
+@@ -140,10 +141,11 @@ export default function Hero() {
+         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-bg-2 border border-border rounded-[4px]">
+-          <span className="w-1.5 h-1.5 rounded-full bg-fg-3" /> VANCOUVER, BC
++          <span className="w-1.5 h-1.5 rounded-full bg-fg-3" /> BURNABY, BC · WILL RELOCATE
+         </span>
+-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-bg-2 border border-border rounded-[4px]">SFU · B.SC 2025</span>
+-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-bg-2 border border-border rounded-[4px]">WILL RELOCATE</span>
++        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-bg-2 border border-border rounded-[4px]">B.SC COMPUTING SCIENCE, SFU</span>
++        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-bg-2 border border-border rounded-[4px]">C · C++ · PYTHON</span>
++        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-bg-2 border border-border rounded-[4px]">STM32 · ESP32 · ARM CORTEX-M</span>
++        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-bg-2 border border-border rounded-[4px]">EMBEDDED ML · AI SYSTEMS</span>
+       </div>
+ 
+       <div className="grid grid-cols-1 gap-10 items-start lg:grid-cols-[1fr_280px] lg:gap-[60px]">
+@@ -153,7 +155,7 @@ export default function Hero() {
+           </div>
+ 
+           <h1 className="hero-heading font-normal tracking-[-0.035em] leading-[1.02] text-fg">
+-            My attention span is a <GlitchText><StrikeUnderline>distributed system.</StrikeUnderline></GlitchText>
++            I write the layer that has to be right, and <GlitchText><StrikeUnderline>the tests that prove it.</StrikeUnderline></GlitchText>
+           </h1>
+ 
+           <AdhdPlasma />
+@@ -161,9 +163,9 @@ export default function Hero() {
+           <Terminal />
+ 
+           <p className="text-xl text-fg-2 max-w-[580px] mt-7" style={{ textWrap: 'pretty' }}>
+-            No single specialty &mdash; just a habit. Something looks hard, I spend the day on it,
+-            something runs, I go find the next thing. Currently stuck between a RISC-V CPU on
+-            an Altera board and learning Zig. Send help <span className="opacity-70">(or an offer).</span>
++            I'm a firmware developer finishing a Computing Science degree at SFU in April 2026.
++            Eight months at Schneider Electric writing C and C++ for the boards inside solar power
++            inverters, and almost two years on SFU Robot Soccer's firmware team.
++            <span className="opacity-70"> Also merged a driver into Espressif's ESP-IDF.</span>
+           </p>
+ 
+           <div className="flex gap-2.5 mt-7 flex-wrap">
+diff --git a/src/components/About.jsx b/src/components/About.jsx
+index 9c89a7e..b2c3d4e 100644
+--- a/src/components/About.jsx
++++ b/src/components/About.jsx
+@@ -6,13 +6,13 @@ export default function About() {
+       <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr] gap-10 md:gap-[60px] mt-10">
+         <div className="text-xl text-fg-2" style={{ textWrap: 'pretty' }}>
+           <p className="mb-[18px] text-2xl text-fg">
+-            I'm Vinh. Fresh grad out of SFU. Mostly interested in low-level programming and C these days — the kind of stuff that either works or doesn't, no middle ground.
++            I'm Vinh, a firmware developer finishing a Computing Science degree at SFU. I specialize in embedded systems — ARM Cortex-M microcontrollers, FreeRTOS, SPI and I2C — and spend a lot of time reading hardware reference manuals.
+           </p>
+           <p className="mb-[18px]">
+-            My path has been a bit of a tour: React/React Native for web and mobile, then some firmware work, then a detour through GPU computing, and now I keep finding myself gravitating back to the <span className="text-fg font-medium">metal</span>. Turns out the deeper I go, the more fun it gets.
++            I came to firmware from an application-software background, which is probably why I build the test harness before the feature. At Schneider Electric I built a time-synchronisation system that kept clocks aligned within a millisecond across devices, and a containerised test rig that proved it.
+           </p>
+           <p className="mb-[18px]">
+-            I think the best engineers are the ones who are genuinely curious about what's happening under the abstraction. I try to be that kind of engineer.
++            On the side I write Python and PyTorch — mostly reinforcement learning and multi-agent systems — and I'm increasingly interested in verifying what those systems produce, the same way I'd verify a chip.
+           </p>
+           <p className="text-fg-3 text-lg italic">
+             "<span className="font-serif italic tracking-[-0.01em]">With great power comes great responsibility</span>" — a belief that guides my coding philosophy and, honestly, most of my decisions.
+diff --git a/src/App.jsx b/src/App.jsx
+index 87fb633..c4d5e6f 100644
+--- a/src/App.jsx
++++ b/src/App.jsx
+@@ -3,6 +3,7 @@ import Atmosphere from './components/Atmosphere';
+ import GlitchIntro from './components/GlitchIntro';
+ import Hero from './components/Hero';
+ import About from './components/About';
++import Story from './components/Story';
+ import Skills from './components/Skills';
+ import Projects from './components/Projects';
+ import Contact from './components/Contact';
+@@ -66,6 +67,7 @@ export default function App() {
+         <Hero />
+         <About />
++        <Story />
+         <Skills />
+         <Projects />
+         <Contact />
+diff --git a/src/components/Story.jsx b/src/components/Story.jsx
+new file mode 100644
+index 0000000..1a2b3c4
+--- /dev/null
++++ b/src/components/Story.jsx
+@@ -0,0 +1,58 @@
++const ACTS = [
++  {
++    no: 'Act I', when: '2021 – 2022', where: 'VIRENTO · startup competition',
++    title: 'Learning what engineering practice actually is',
++    lede: "Led three engineers on VIRENTO, a peer rental marketplace, and got my first real lesson in why practice matters, not just code that runs.",
++    takeaway: "Distance is a design choice. I think about data locality now because I once didn't.",
++  },
++  {
++    no: 'Act II', when: 'Mid 2022', where: 'Forget me Not · Android app for dementia patients',
++    title: 'Where purpose clicked',
++    lede: "A course assignment: build a mobile app for people living with dementia, so they could reach the people they love.",
++    takeaway: "Building an actual solution to somebody's actual problem is the part I'm in this for.",
++  },
++  {
++    no: 'Act III', when: 'Sep 2022 – Dec 2023', where: 'Atimi Software · Vancouver',
++    title: "Sitting with people's problems, then proposing a fix",
++    lede: "I proposed a template email to my manager to save people repeating themselves on HR on/offboarding — it grew into full automation covering over 100 employees.",
++    takeaway: "Sitting with the person who has the problem is the fastest requirements gathering there is.",
++  },
++  {
++    no: 'Act IV', when: 'Jan 2024 – present', where: 'SFU BluePrint · non-profit collaborations',
++    title: 'Discipline, at team scale',
++    lede: "Volunteering on a strong, dynamic team — shipping to real people, against a real deadline, while the design kept evolving.",
++    takeaway: "It just felt wrong to ship something volunteers rely on without a gate in front of it.",
++  },
++  {
++    no: 'Act V', when: 'May – Aug 2024', where: 'Parabix · faculty project',
++    title: 'The curiosity that pointed me at firmware',
++    lede: "Compiled C++ to NVIDIA PTX assembly through LLVM — word counting is boring at the top, not boring at all at the instruction level.",
++    takeaway: "That gap is what made me realise firmware — the layer closest to the mechanism — was what I wanted to chase.",
++  },
++  {
++    no: 'Act VI', when: 'Jan 2025 – present', where: 'SFU Robot Soccer',
++    title: 'Solving real problems in firmware',
++    lede: "Brought up SPI/IMU integration and refactored firmware to simulate on a host, enabling CI on every commit.",
++    takeaway: "That extra layer of continuous checking is what let the team trust the control loop under competition pressure.",
++  },
++  {
++    no: 'Act VII', when: 'Jan – Aug 2025', where: 'Schneider Electric · Richmond, BC',
++    title: 'Bridging code and physical machines',
++    lede: "A firmware co-op on solar/battery inverters — real product, real safety expectations.",
++    takeaway: "Some problems just aren't reachable from inside software, and I'd rather go learn that side than pretend otherwise.",
++  },
++  {
++    no: 'Act VIII', when: 'Jan 2026 – now', where: 'risc-v-logism · personal research',
++    title: 'What hardware verification taught me about AI',
++    lede: "Building a RISC-V CPU raised a question testing couldn't answer, which led to formal verification and Dafny.",
++    takeaway: "The same machinery that proves a circuit right is the machinery I'd want for checking code an AI model wrote.",
++  },
++];
++
++export default function Story() {
++  return (
++    <section className="max-w-page mx-auto px-5 py-[calc(80px*var(--density))]" id="story">
++      <div className="section-label font-mono text-xs text-fg-4 tracking-[0.04em] uppercase flex items-center gap-2.5 mb-6">§ how I got here</div>
++      <h2 className="section-title font-medium tracking-[-0.025em] leading-[1.1] max-w-[760px] mb-10">From software to firmware.</h2>
++      <div className="flex flex-col gap-12">
++        {ACTS.map(act => (
++          <div key={act.no} className="grid grid-cols-1 md:grid-cols-[176px_1fr] gap-6 md:gap-10 items-start pl-4 border-l border-border">
++            <div>
++              <div className="font-mono text-2xs tracking-[0.1em] uppercase text-accent">{act.no}</div>
++              <div className="font-mono text-xs text-fg-4 mt-1">{act.when}</div>
++              <div className="text-sm text-fg-3 mt-3">{act.where}</div>
++            </div>
++            <div>
++              <h3 className="text-2xl mb-3 tracking-[-0.02em]">{act.title}</h3>
++              <p className="text-fg-2 leading-[1.6] mb-3 max-w-[62ch]">{act.lede}</p>
++              <div className="text-fg-2 leading-[1.6] max-w-[60ch] pt-3 border-t border-border">
++                <span className="text-accent">What it changed:</span> {act.takeaway}
++              </div>
++            </div>
++          </div>
++        ))}
++      </div>
++    </section>
++  );
++}
